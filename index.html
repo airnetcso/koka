@@ -9,8 +9,8 @@
 html,body{height:100%;margin:0;padding:0}
 body{
   font-family:'Segoe UI',system-ui,Arial,sans-serif;
-  /* Background favorit kamu - mirror yang masih hidup */
-  background:url('https://i.imgur.com/0mK8z8K.jpg') no-repeat center center fixed;
+  /* BG favorit kamu yang masih OK */
+  background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
   background-size:cover;
   display:flex;
   justify-content:center;
@@ -136,7 +136,7 @@ const users=[
 const kodeSoal={
   "H29976": "soal1.json",
   "R43213": "soal2.json",
-  "Z29985": "soal3.json"
+  "Z21985": "soal3.json"
 };
 
 let soal=[],i=0,score=0,time=3000,timer;
@@ -164,7 +164,7 @@ function login(){
  error.textContent = "Sedang memuat soal...";
  fetch(kodeSoal[k] + "?v=" + Date.now())
   .then(r => {
-    if(!r.ok) throw new Error("File soal tidak ditemukan. Pastikan file JSON ada di folder sama dan buka via server lokal!");
+    if(!r.ok) throw new Error("File soal tidak ditemukan. Pastikan file JSON ada di folder sama dan buka via server lokal (bukan double-click HTML)!");
     return r.json();
   })
   .then(d => {
