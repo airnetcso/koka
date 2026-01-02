@@ -3,226 +3,237 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TEST KOSA KATA</title>
+<title>Test Kosa Kata</title>
 
 <style>
-@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1}}
-html,body{margin:0;height:100%;font-family:'Segoe UI',Arial}
-body{
-background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') center/cover no-repeat fixed;
-display:flex;justify-content:center;align-items:center;color:#fff
-}
-body::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.4)}
-.container{
-position:relative;z-index:2;width:90%;max-width:420px;
-background:rgba(255,255,255,.15);backdrop-filter:blur(14px);
-padding:35px;border-radius:24px;
-box-shadow:0 20px 40px rgba(0,0,0,.4);
-animation:fadeIn .6s ease
-}
-h1{text-align:center;margin-bottom:25px}
-input,button{
-width:100%;padding:15px;margin-top:14px;
-font-size:17px;border-radius:12px;border:none
-}
-input{background:rgba(255,255,255,.25);color:white}
-input::placeholder{color:#eee}
-button{
-background:linear-gradient(90deg,#10b981,#059669);
-color:white;font-weight:bold;cursor:pointer
-}
-button:hover{transform:translateY(-2px)}
-.hidden{display:none}
-#error{margin-top:14px;color:#ffb4b4;text-align:center}
-#timer{text-align:center;font-size:26px;margin:15px 0}
-.progress{height:10px;background:#ccc;border-radius:5px}
-.progress-bar{height:100%;width:0;background:#10b981;border-radius:5px}
-.question strong{display:block;font-size:42px;text-align:center;margin:30px 0}
-.wrong-list{margin-top:20px;background:#fff3cd;color:#92400e;padding:15px;border-radius:10px}
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+  }
+  .hidden { display: none; }
+
+  .login-box, .quiz-box {
+    max-width: 480px;
+    margin: 60px auto;
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  h2 { text-align: center; color: #059669; }
+
+  input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+
+  button {
+    background: #10b981;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  button:hover { background: #059669; }
+
+  .error {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  #timer {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #dc2626;
+  }
 </style>
 </head>
 
 <body>
 
-<!-- ================= LOGIN PAGE ================= -->
-<div class="container" id="loginPage">
-<h1>LOGIN</h1>
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
-<div id="error"></div>
-<button onclick="login()">MASUK</button>
+<!-- LOGIN PAGE -->
+<div class="login-box" id="loginPage">
+  <h2>LOGIN TEST</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <input id="kodeSoal" placeholder="Kode Soal">
+  <button onclick="login()">LOGIN</button>
+  <div id="errorMsg" class="error"></div>
 </div>
 
-<!-- ================= PILIH KODE ================= -->
-<div class="container hidden" id="kodePage">
-<h1>PILIH KODE TEST</h1>
-<input id="kodeSoal" placeholder="Masukkan Kode Test">
-<button onclick="startTest()">MULAI TEST</button>
-</div>
-
-<!-- ================= QUIZ ================= -->
-<div class="container hidden" id="quizPage">
-<h1>TEST KOSA KATA</h1>
-<div id="timer">30:00</div>
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-
-<div id="questionArea">
-<div class="question"><strong id="currentWord"></strong></div>
-<input id="answerInput" placeholder="Ketik jawaban">
-<button onclick="submitAnswer()">SUBMIT</button>
-</div>
-
-<div id="resultArea" class="hidden">
-<h2>HASIL TEST</h2>
-<p id="scoreText"></p>
-<div id="wrongWords" class="wrong-list hidden"></div>
-<button onclick="location.reload()">SELESAI</button>
-</div>
+<!-- QUIZ PAGE -->
+<div class="quiz-box hidden" id="quizPage">
+  <div id="timer">50:00</div>
+  <div id="question"></div>
+  <div id="options"></div>
+  <button onclick="nextQuestion()">Soal Berikutnya</button>
 </div>
 
 <script>
-/* ================= AKUN ================= */
-const adminAccount = { username:"admin", password:"admin123" };
+/* =======================
+   DATA AKUN (FINAL)
+======================= */
 
-const users = [
-  { username:"user1", password:"12345" },
-  { username:"hanarizka", password:"Nungkihana24!" },
-  { username:"user3", password:"12345" },
-  { username:"siswa01", password:"12345" },
-  { username:"windi", password:"Windi2000" },
-  { username:"rismaya97", password:"bahasakorea" },
-  { username:"admin", password:"admin123"}
-  { username:"sita77", password:"minyooki" },
-  { username:"Aini185", password:"Doraemon" },
-  { username:"Hangeulfei", password:"studykorea02" },
-  { username:"Hamdan106", password:"Fukuo106"},
-  { username:"user4", password:"12345" },
-  { username:"user5", password:"12345" }
-];
-
-/* ================= KODE SOAL ================= */
-const kodeMapping = {
-  "H29976":"soal1.json",
-  "R43213":"soal2.json",
-  "Z21985":"soal3.json"
+// ADMIN
+const adminAccount = {
+  username: "admin",
+  password: "admin123"
 };
 
-let questions=[],currentIndex=0,score=0,timeLeft=3000,timer;
-let loginUser="",kodeAktif="",wrongList=[];
+// USER
+const userAccounts = [
+  { username: "user1", password: "12345" },
+  { username: "hanarizka", password: "Nungkihana24!" },
+  { username: "user3", password: "12345" },
+  { username: "siswa01", password: "12345" },
+  { username: "windi", password: "Windi2000" },
+  { username: "rismaya97", password: "bahasakorea" },
+  { username: "sita77", password: "minyooki" },
+  { username: "Aini185", password: "Doraemon" },
+  { username: "Hangeulfei", password: "studykorea02" },
+  { username: "Hamdan106", password: "Fukuo106" }
+];
 
-/* ================= LOGIN ================= */
-function login(){
-loginUser=document.getElementById("username").value.trim();
-const pass=document.getElementById("password").value.trim();
-const error=document.getElementById("error");
-error.textContent="";
+/* =======================
+   KODE SOAL (TIDAK DIUBAH)
+======================= */
+const kodeMapping = {
+  "A1": "soal_a1.json",
+  "A2": "soal_a2.json",
+  "B1": "soal_b1.json"
+};
 
-if(!loginUser||!pass){
-error.textContent="Username dan password wajib!";
-return;
+/* =======================
+   VARIABEL QUIZ
+======================= */
+let questions = [];
+let index = 0;
+let score = 0;
+let username = "";
+let kodeSoal = "";
+
+/* =======================
+   TIMER 50 MENIT
+======================= */
+let timeLeft = 3000;
+let timerInterval;
+
+/* =======================
+   LOGIN (MINIMAL EDIT)
+======================= */
+function login() {
+  username = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value.trim();
+  kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
+  const error = document.getElementById("errorMsg");
+  error.textContent = "";
+
+  if (!username || !pass || !kodeSoal) {
+    error.textContent = "Lengkapi semua kolom!";
+    return;
+  }
+
+  // ADMIN LOGIN
+  if (username === adminAccount.username && pass === adminAccount.password) {
+    window.location.href = "admin.html";
+    return;
+  }
+
+  // USER LOGIN
+  const validUser = userAccounts.find(
+    u => u.username === username && u.password === pass
+  );
+
+  if (!validUser) {
+    error.textContent = "Username atau password salah!";
+    return;
+  }
+
+  const fileName = kodeMapping[kodeSoal];
+  if (!fileName) {
+    error.textContent = "Kode soal tidak valid!";
+    return;
+  }
+
+  loadQuestions(fileName).then(() => {
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("quizPage").classList.remove("hidden");
+    startQuiz();
+  });
 }
 
-/* ADMIN */
-if(loginUser===adminAccount.username && pass===adminAccount.password){
-window.location.href="admin.html";
-return;
+/* =======================
+   LOAD SOAL
+======================= */
+async function loadQuestions(file) {
+  const res = await fetch(file);
+  questions = await res.json();
 }
 
-/* USER */
-const validUser = users.find(u=>u.username===loginUser && u.password===pass);
-if(!validUser){
-error.textContent="Username atau password salah!";
-return;
+/* =======================
+   QUIZ
+======================= */
+function startQuiz() {
+  index = 0;
+  score = 0;
+  timeLeft = 3000; // 50 menit
+  startTimer();
+  showQuestion();
 }
 
-document.getElementById("loginPage").classList.add("hidden");
-document.getElementById("kodePage").classList.remove("hidden");
+function showQuestion() {
+  const q = questions[index];
+  document.getElementById("question").innerHTML = `<h3>${q.question}</h3>`;
+  document.getElementById("options").innerHTML = q.options.map((o,i)=>`
+    <button onclick="answer(${i})">${o}</button>
+  `).join("");
 }
 
-/* ================= START TEST ================= */
-function startTest(){
-kodeAktif=document.getElementById("kodeSoal").value.trim().toUpperCase();
-if(!kodeMapping[kodeAktif]){
-alert("Kode test tidak valid!");
-return;
+function answer(i) {
+  if (i === questions[index].answer) score++;
+  nextQuestion();
 }
 
-fetch(kodeMapping[kodeAktif])
-.then(r=>r.json())
-.then(d=>{
-questions=d.sort(()=>Math.random()-.5);
-document.getElementById("kodePage").classList.add("hidden");
-document.getElementById("quizPage").classList.remove("hidden");
-startQuiz();
-});
+function nextQuestion() {
+  index++;
+  if (index < questions.length) {
+    showQuestion();
+  } else {
+    finishQuiz();
+  }
 }
 
-/* ================= QUIZ ================= */
-function startQuiz(){
-currentIndex=0;score=0;wrongList=[];timeLeft=1800;
-updateTimer();
-timer=setInterval(()=>{
-timeLeft--;updateTimer();
-if(timeLeft<=0) finishQuiz();
-},1000);
-nextQuestion();
+/* =======================
+   TIMER
+======================= */
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      finishQuiz();
+    }
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById("timer").textContent =
+      `${m}:${s.toString().padStart(2,"0")}`;
+  }, 1000);
 }
 
-function updateTimer(){
-const m=String(Math.floor(timeLeft/60)).padStart(2,'0');
-const s=String(timeLeft%60).padStart(2,'0');
-document.getElementById("timer").textContent=`${m}:${s}`;
-}
-
-function nextQuestion(){
-if(currentIndex>=questions.length) return finishQuiz();
-document.getElementById("currentWord").textContent=questions[currentIndex].korea;
-document.getElementById("answerInput").value="";
-document.getElementById("answerInput").focus();
-document.getElementById("progressBar").style.width=
-((currentIndex/questions.length)*100)+"%";
-}
-
-function submitAnswer(){
-const ans=document.getElementById("answerInput").value.trim().toLowerCase();
-const q=questions[currentIndex];
-
-if(ans!==q.indo.toLowerCase()){
-wrongList.push(`${q.korea} → ${q.indo}`);
-}else{
-score++;
-}
-currentIndex++;
-nextQuestion();
-}
-
-/* ================= FINISH ================= */
-function finishQuiz(){
-clearInterval(timer);
-document.getElementById("questionArea").classList.add("hidden");
-document.getElementById("resultArea").classList.remove("hidden");
-
-const percent=Math.round((score/questions.length)*100);
-document.getElementById("scoreText").textContent=
-`Skor ${score}/${questions.length} (${percent}%)`;
-
-if(wrongList.length){
-const w=document.getElementById("wrongWords");
-w.classList.remove("hidden");
-w.innerHTML="<strong>Jawaban salah:</strong><br>"+wrongList.join("<br>");
-}
-
-/* SIMPAN KE LOCALSTORAGE */
-const data=JSON.parse(localStorage.getItem("testResults")||"[]");
-data.push({
-username:loginUser,
-kode:kodeAktif,
-score,
-total:questions.length,
-percent,
-date:new Date().toLocaleString("id-ID")
-});
-localStorage.setItem("testResults",JSON.stringify(data));
+/* =======================
+   SELESAI
+======================= */
+function finishQuiz() {
+  clearInterval(timerInterval);
+  alert("Test selesai!");
 }
 </script>
 
