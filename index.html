@@ -54,7 +54,6 @@ input{
   background:rgba(255,255,255,.12);
   color:#fff;
 }
-/* Placeholder hitam pekat */
 input::placeholder {
   color: #000000 !important;
   opacity: 1;
@@ -78,7 +77,6 @@ button{
 .bar{height:100%;width:0;background:#10b981;transition:width .3s}
 .question strong{font-size:40px;display:block;text-align:center;margin:25px 0}
 
-/* Footer Copyright - di paling bawah, fixed tapi nggak nutupin konten */
 .footer {
   position: fixed;
   bottom: 0;
@@ -114,7 +112,6 @@ button{
   <button onclick="submit()">SUBMIT</button>
 </div>
 
-<!-- Copyright Footer -->
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
@@ -128,7 +125,6 @@ const users=[
  {username:"admin",password:"admin123",role:"admin"},
  {username:"Fikrisurya",password:"464646"},
  {username:"Mutiara2003",password:"Mutiara14"},
- {username:"admin",password:"admin123",role:"admin"},
  {username:"sita77",password:"minyooki"},
  {username:"Aini185",password:"Doraemon"},
  {username:"Hangeulfei",password:"studykorea02"},
@@ -136,9 +132,9 @@ const users=[
 ];
 
 const kodeSoal={
- H29976:"./soal1.json",
- R43213:"./soal2.json",
- Z21985:"./soal3.json"
+  "H29976": "soal1.json",  // hapus ./ kalau file di folder sama
+  "R43213": "soal2.json",
+  "Z21985": "soal3.json"
 };
 
 let soal=[],i=0,score=0,time=3000,timer;
@@ -154,29 +150,40 @@ const word = document.getElementById("word");
 const answer = document.getElementById("answer");
 
 function login(){
- const u=user.value.trim();
- const p=pass.value.trim();
- const k=kode.value.trim().toUpperCase();
- error.textContent="";
- const akun=users.find(x=>x.username===u&&x.password===p);
- if(!akun){error.textContent="Login salah";return;}
- if(akun.role==="admin"){location.href="admin.html";return;}
- if(!kodeSoal[k]){error.textContent="Kode test salah";return;}
- fetch(kodeSoal[k]+"?v="+Date.now())
-  .then(r=>{
-    if(!r.ok) throw "Soal tidak ditemukan";
+ const u = user.value.trim();
+ const p = pass.value.trim();
+ const k = kode.value.trim().toUpperCase();
+ error.textContent = "";
+ const akun = users.find(x => x.username === u && x.password === p);
+ if(!akun){ error.textContent="Login salah"; return; }
+ if(akun.role==="admin"){ location.href="admin.html"; return; }
+ if(!kodeSoal[k]){ error.textContent="Kode test salah"; return; }
+
+ console.log("Mencoba load soal dari:", kodeSoal[k]); // debug
+
+ fetch(kodeSoal[k] + "?v=" + Date.now())
+  .then(r => {
+    if(!r.ok) {
+      console.error("Fetch error:", r.status, r.statusText);
+      throw new Error("Soal tidak ditemukan (404 atau error server)");
+    }
     return r.json();
   })
-  .then(d=>{
-    if(!Array.isArray(d)) throw "Format JSON salah";
-    soal=d;
+  .then(d => {
+    console.log("Soal berhasil diload:", d);
+    if(!Array.isArray(d) || d.length === 0) throw "Format JSON salah atau kosong";
+    soal = d;
     loginBox.classList.add("hidden");
     quizBox.classList.remove("hidden");
     start();
   })
-  .catch(e=>error.textContent=e);
+  .catch(e => {
+    console.error("Error load soal:", e);
+    error.textContent = "Gagal load soal: " + e.message || e;
+  });
 }
 
+// sisanya sama seperti sebelumnya...
 function start(){
  i=0;score=0;time=3000;
  timer=setInterval(()=>{
