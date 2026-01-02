@@ -9,7 +9,8 @@
 html,body{height:100%;margin:0;padding:0}
 body{
   font-family:'Segoe UI',system-ui,Arial,sans-serif;
-  background:url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') no-repeat center center fixed;
+  /* Background favorit kamu - mirror yang masih hidup */
+  background:url('https://i.imgur.com/0mK8z8K.jpg') no-repeat center center fixed;
   background-size:cover;
   display:flex;
   justify-content:center;
@@ -54,6 +55,7 @@ input{
   background:rgba(255,255,255,.12);
   color:#fff;
 }
+/* Placeholder hitam pekat */
 input::placeholder {
   color: #000000 !important;
   opacity: 1;
@@ -115,7 +117,7 @@ button{
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
-const users = [ /* daftar user tetap sama seperti sebelumnya */ 
+const users=[
  {username:"user1",password:"12345"},
  {username:"hanarizka",password:"Nungkihana24!"},
  {username:"user3",password:"12345"},
@@ -131,10 +133,10 @@ const users = [ /* daftar user tetap sama seperti sebelumnya */
  {username:"Hamdan106",password:"Fukuo106"}
 ];
 
-const kodeSoal = {
+const kodeSoal={
   "H29976": "soal1.json",
   "R43213": "soal2.json",
-  "Z21985": "soal3.json"
+  "Z29985": "soal3.json"
 };
 
 let soal=[],i=0,score=0,time=3000,timer;
@@ -159,40 +161,37 @@ function login(){
  if(akun.role==="admin"){ location.href="admin.html"; return; }
  if(!kodeSoal[k]){ error.textContent="Kode test salah"; return; }
 
- const fileSoal = kodeSoal[k];
- console.log("Mencoba load:", fileSoal);
-
- fetch(fileSoal + "?v=" + Date.now())
+ error.textContent = "Sedang memuat soal...";
+ fetch(kodeSoal[k] + "?v=" + Date.now())
   .then(r => {
-    if(!r.ok) throw new Error(`HTTP ${r.status}: File tidak ditemukan atau error server`);
+    if(!r.ok) throw new Error("File soal tidak ditemukan. Pastikan file JSON ada di folder sama dan buka via server lokal!");
     return r.json();
   })
   .then(d => {
     if(!Array.isArray(d) || d.length === 0) throw "JSON kosong atau format salah";
     soal = d;
-    console.log("Soal loaded:", soal.length, "item");
     loginBox.classList.add("hidden");
     quizBox.classList.remove("hidden");
     start();
   })
   .catch(e => {
-    console.error("Gagal load soal:", e);
     error.textContent = "Gagal load soal: " + e.message;
+    console.error(e);
   });
 }
-
-/* Fungsi start, timerDiv, next, submit, finish sama seperti sebelumnya */
 
 function start(){
  i=0;score=0;time=3000;
  timer=setInterval(()=>{ time--; timerDiv(); if(time<=0)finish(); },1000);
  next();
 }
+
 function timerDiv(){
  const m=String(Math.floor(time/60)).padStart(2,"0");
  const s=String(time%60).padStart(2,"0");
  timerDiv.textContent=`${m}:${s}`;
 }
+
 function next(){
  if(i>=soal.length){finish();return;}
  word.textContent=soal[i].korea;
@@ -200,11 +199,13 @@ function next(){
  answer.focus();
  bar.style.width=(i/soal.length*100)+"%";
 }
+
 function submit(){
  if(answer.value.trim().toLowerCase()===soal[i].indo.toLowerCase())score++;
  i++;
  next();
 }
+
 function finish(){
  clearInterval(timer);
  alert(`Skor kamu: ${score}/${soal.length}`);
