@@ -68,15 +68,23 @@ button{
   <button onclick="login()">MULAI / 시작</button>
 </div>
 
-<div class="container hidden" id="quizBox">
-  <h2 align="center">TEST KOSA KATA</h2>
-  <div id="timer">50:00</div>
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <div class="question"><strong id="word"></strong></div>
-  <input id="answer" placeholder="Jawaban">
-  <button onclick="submit()">SUBMIT</button>
-</div>
-  <div class="footer">©2026 Denzuka - Kim Jongun. All rights reserved.</div>
+<div class="container hidden" id="quizPage">
+    <h1>TEST KOSA KATA</h1>
+    <div id="timer">30:00</div>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div id="questionArea">
+      <div class="question"><strong id="currentWord"></strong></div>
+      <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
+      <button onclick="submitAnswer()">SUBMIT</button>
+    </div>
+    <div id="resultArea" class="hidden">
+      <h2 style="color:#fff; margin-bottom:20px;">Hasil Test</h2>
+      <p id="scoreText" style="font-size:28px; font-weight:bold; color:#d1fae5;"></p>
+      <div id="wrongWords" class="wrong-list hidden"></div>
+      <button onclick="restartQuiz()" style="background:linear-gradient(90deg, #3b82f6, #2563eb);">ULANGI LAGI</button>
+    </div>
+  </div>
+  <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
 const users=[
@@ -169,6 +177,7 @@ function finish(){
 
 </body>
 </html>
+
 
 
 
