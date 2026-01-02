@@ -4,112 +4,158 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TEST KOSA KATA</title>
+
   <style>
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
     body {
-      font-family: 'Segoe UI', system-ui, Arial, sans-serif; min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, Arial, sans-serif;
       background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
-      background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 20px; color: #fff; position: relative;
+      background-size: cover;
+      display: flex; justify-content: center; align-items: center;
+      color: #fff; position: relative;
     }
-    body::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 1; }
+    body::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,.3); z-index:1; }
     .container {
-      position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
-      -webkit-overflow-scrolling: touch; background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px); border-radius: 24px; padding: 40px 30px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.18); animation: fadeIn 0.8s ease-out;
+      position: relative; z-index: 2;
+      width: 90%; max-width: 440px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(14px);
+      border-radius: 24px;
+      padding: 40px 30px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+      animation: fadeIn .8s;
     }
-    h1 { font-size: 32px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
-    input[type="text"], input[type="password"] { width: 100%; padding: 16px; margin: 14px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
-      border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white; transition: all 0.3s ease; }
-    button { width: 100%; padding: 16px; margin: 16px 0 8px; font-size: 20px; font-weight: bold; border: none;
-      border-radius: 12px; color: white; cursor: pointer; background: linear-gradient(90deg, #10b981, #059669); }
-    .error { color: #ff6b6b; text-align: center; margin: 12px 0; font-weight: 600; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; }
-    .hidden { display: none !important; }
-    #timer { text-align: center; font-size: 28px; margin: 20px 0; }
+    h1 { text-align:center; margin-bottom:30px; }
+    input { width:100%; padding:16px; margin:12px 0; font-size:18px; border-radius:12px; border:none; }
+    button { width:100%; padding:16px; font-size:20px; border-radius:12px; border:none; cursor:pointer;
+      background:linear-gradient(90deg,#10b981,#059669); color:#fff; font-weight:bold; }
+    .hidden { display:none; }
+    .error { margin-top:12px; text-align:center; color:#ff6b6b; font-weight:bold; }
+    #timer { text-align:center; font-size:28px; margin:20px 0; }
+    strong { font-size:42px; display:block; text-align:center; margin:30px 0; }
   </style>
 </head>
 
 <body>
+
+<!-- LOGIN -->
 <div class="container" id="loginPage">
   <h1>TEST KOSA KATA</h1>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <input type="text" id="kodeSoal" placeholder="Kode Test">
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <input id="kodeSoal" placeholder="Kode Test">
   <div class="error" id="errorMsg"></div>
   <button onclick="login()">MULAI</button>
 </div>
 
+<!-- QUIZ -->
 <div class="container hidden" id="quizPage">
   <h1>TEST KOSA KATA</h1>
   <div id="timer">50:00</div>
-  <div id="questionArea">
-    <strong id="currentWord"></strong>
-    <input type="text" id="answerInput">
-    <button onclick="submitAnswer()">SUBMIT</button>
-  </div>
+  <strong id="currentWord"></strong>
+  <input id="answerInput" placeholder="Ketik jawaban">
+  <button onclick="submitAnswer()">SUBMIT</button>
 </div>
 
 <script>
-/* ===== USER LOGIN ===== */
+/* ===== USER ===== */
 const users = [
-  { username:"user1", password:"12345" },
-  { username:"hanarizka", password:"Nungkihana24!" },
-  { username:"user3", password:"12345" },
-  { username:"siswa01", password:"12345" },
-  { username:"windi", password:"Windi2000" },
-  { username:"rismaya97", password:"bahasakorea" },
-  { username:"sita77", password:"minyooki" },
-  { username:"Aini185", password:"Doraemon" },
-  { username:"Hangeulfei", password:"studykorea02" },
-  { username:"Hamdan106", password:"Fukuo106" },
-  { username:"admin", password:"admin123", role:"admin" }
+  {username:"user1",password:"12345"},
+  {username:"hanarizka",password:"Nungkihana24!"},
+  {username:"user3",password:"12345"},
+  {username:"siswa01",password:"12345"},
+  {username:"windi",password:"Windi2000"},
+  {username:"rismaya97",password:"bahasakorea"},
+  {username:"sita77",password:"minyooki"},
+  {username:"Aini185",password:"Doraemon"},
+  {username:"Hangeulfei",password:"studykorea02"},
+  {username:"Hamdan106",password:"Fukuo106"},
+  {username:"admin",password:"admin123",role:"admin"}
 ];
 
 /* ===== KODE SOAL ===== */
 const kodeMapping = {
-  "H29976": "soal1.json",
-  "R43213": "soal2.json",
-  "Z21985": "soal3.json"
+  "H29976":"soal1.json",
+  "R43213":"soal2.json",
+  "Z21985":"soal3.json"
 };
 
-let timeLeft = 3000; // 50 menit
+let questions=[], index=0, score=0;
+let timeLeft=3000, timerInt;
 
-function login() {
-  const u = username.value.trim();
-  const p = password.value.trim();
-  const k = kodeSoal.value.trim().toUpperCase();
-  errorMsg.textContent = "";
+/* ===== LOGIN ===== */
+function login(){
+  const u=username.value.trim();
+  const p=password.value.trim();
+  const k=kodeSoal.value.trim().toUpperCase();
+  errorMsg.textContent="";
 
-  const user = users.find(x => x.username === u && x.password === p);
-  if (!user) return errorMsg.textContent = "Username / Password salah";
+  const user=users.find(x=>x.username===u && x.password===p);
+  if(!user) return errorMsg.textContent="Username / Password salah";
 
-  if (user.role === "admin") {
-    window.location.href = "admin.html";
-    return;
+  if(user.role==="admin"){
+    location.href="admin.html"; return;
   }
 
-  if (!kodeMapping[k]) return errorMsg.textContent = "Kode soal tidak valid";
+  if(!kodeMapping[k]) return errorMsg.textContent="Kode soal tidak valid";
 
-  loginPage.classList.add("hidden");
-  quizPage.classList.remove("hidden");
+  fetch(kodeMapping[k])
+    .then(r=>r.json())
+    .then(data=>{
+      questions=data.sort(()=>Math.random()-0.5);
+      loginPage.classList.add("hidden");
+      quizPage.classList.remove("hidden");
+      startQuiz();
+    })
+    .catch(()=>errorMsg.textContent="Soal tidak ditemukan");
+}
+
+/* ===== QUIZ ===== */
+function startQuiz(){
+  index=0; score=0;
+  showQuestion();
   startTimer();
 }
 
-function startTimer() {
-  updateTimer();
-  setInterval(() => {
-    timeLeft--;
-    updateTimer();
-  }, 1000);
+function showQuestion(){
+  if(index>=questions.length){
+    alert("Selesai!\nSkor: "+score+"/"+questions.length);
+    location.reload();
+    return;
+  }
+  currentWord.textContent=questions[index].korea;
+  answerInput.value="";
+  answerInput.focus();
 }
 
-function updateTimer() {
-  const m = String(Math.floor(timeLeft / 60)).padStart(2,'0');
-  const s = String(timeLeft % 60).padStart(2,'0');
-  timer.textContent = `${m}:${s}`;
+function submitAnswer(){
+  if(answerInput.value.trim().toLowerCase()===questions[index].indo.toLowerCase()){
+    score++;
+  }
+  index++;
+  showQuestion();
+}
+
+/* ===== TIMER ===== */
+function startTimer(){
+  updateTimer();
+  timerInt=setInterval(()=>{
+    timeLeft--;
+    updateTimer();
+    if(timeLeft<=0){
+      clearInterval(timerInt);
+      alert("Waktu habis!");
+      location.reload();
+    }
+  },1000);
+}
+function updateTimer(){
+  const m=String(Math.floor(timeLeft/60)).padStart(2,"0");
+  const s=String(timeLeft%60).padStart(2,"0");
+  timer.textContent=`${m}:${s}`;
 }
 </script>
+
 </body>
 </html>
