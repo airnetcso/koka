@@ -7,59 +7,102 @@
 
 <style>
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
+html,body{height:100%;margin:0;padding:0;overflow:hidden}
 body{
-  font-family:'Segoe UI',Arial,sans-serif;
-  background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') center/cover fixed;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;position:relative
+  font-family:'Segoe UI',system-ui,Arial,sans-serif;
+  background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
+  background-size:cover;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  color:#fff;
+  position:relative;
 }
 body::before{
-  content:'';position:absolute;inset:0;
-  background:rgba(0,0,0,.35)
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  z-index:1;
 }
 .container{
-  position:relative;z-index:2;
-  width:80%;max-width:420px;
-  padding:36px 28px;
-  background:rgba(255,255,255,.18);
-  backdrop-filter:blur(18px);
-  border-radius:26px;
-  box-shadow:0 20px 50px rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.25);
-  overflow:hidden
+  position:relative;
+  z-index:2;
+  width:80%;
+  max-width:440px;
+  max-height:90vh;
+  overflow-y:auto;
+  background:rgba(255,255,255,.15);
+  backdrop-filter:blur(14px);
+  border-radius:24px;
+  padding:40px 30px;
+  box-shadow:0 15px 40px rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.18);
 }
-h1{text-align:center;margin-bottom:26px}
+h1{text-align:center;margin-bottom:30px}
 input,button{
-  width:100%;height:54px;
+  width:100%;
+  height:54px;
   border-radius:14px;
-  font-size:16px
+  font-size:16px;
 }
 input{
   padding:0 16px;
   margin-bottom:14px;
-  border:1.5px solid rgba(255,255,255,.4);
-  background:rgba(255,255,255,.15);
-  color:#fff
+  border:2px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12);
+  color:#fff;
 }
 input::placeholder{color:rgba(255,255,255,.75)}
 button{
-  border:none;font-weight:700;
-  cursor:pointer;color:#fff;
-  background:linear-gradient(90deg,#10b981,#059669)
+  margin-top:8px;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(90deg,#10b981,#059669);
 }
-.error{color:#fecaca;text-align:center;margin-bottom:12px}
+.error{
+  color:#fecaca;
+  text-align:center;
+  margin-bottom:12px;
+}
 .hidden{display:none}
 #timer{
-  text-align:center;font-size:26px;
-  margin-bottom:14px;font-weight:bold;
+  text-align:center;
+  font-size:28px;
+  margin:18px 0;
+  font-weight:bold;
   background:rgba(220,38,38,.25);
-  padding:10px;border-radius:12px
+  padding:12px;
+  border-radius:12px;
 }
-.progress{height:10px;background:rgba(255,255,255,.2);border-radius:6px;overflow:hidden}
-.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#10b981,#059669)}
-.question strong{display:block;text-align:center;font-size:40px;margin:30px 0}
-.footer{position:absolute;bottom:18px;font-size:14px;z-index:2}
+.progress{
+  height:12px;
+  background:rgba(255,255,255,.2);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#10b981,#059669);
+}
+.question strong{
+  display:block;
+  text-align:center;
+  font-size:42px;
+  margin:30px 0;
+}
+.footer{
+  position:relative;
+  z-index:2;
+  margin-top:30px;
+  font-size:14px;
+}
 </style>
 </head>
 
@@ -68,7 +111,7 @@ button{
 <div class="container" id="loginPage">
   <h1>TEST KOSA KATA</h1>
   <input id="username" placeholder="Username / 이름">
-  <input id="password" type="password" placeholder="Password / 비밀번호">
+  <input id="password" type="password" placeholder="Password / 비밀먼호">
   <input id="kodeSoal" placeholder="Kode Test / 시험코드">
   <div class="error" id="errorMsg"></div>
   <button onclick="login()">MULAI / 시작</button>
@@ -90,10 +133,10 @@ button{
   </div>
 </div>
 
-<div class="footer">© 2026 Denzuka - Kim Jongun. All Rights Reserved.</div>
+<div class="footer">© 2026 TEST KOSA KATA</div>
 
 <script>
-/* ===== USER LIST ===== */
+/* ===== USER ===== */
 const users=[
  {username:"user1",password:"12345"},
  {username:"hanarizka",password:"Nungkihana24!"},
@@ -115,7 +158,7 @@ const kodeMapping={
  "Z21985":"soal3.json"
 };
 
-let questions=[],i=0,score=0,timeLeft=3000,timer;
+let questions=[],index=0,score=0,timeLeft=3000,timer;
 
 /* ===== LOGIN ===== */
 function login(){
@@ -123,23 +166,26 @@ function login(){
  const p=password.value.trim();
  const k=kodeSoal.value.trim().toUpperCase();
  errorMsg.textContent="";
- if(!u||!p||!k){errorMsg.textContent="Lengkapi semua kolom";return}
+ if(!u||!p||!k){errorMsg.textContent="Lengkapi semua kolom";return;}
  const user=users.find(x=>x.username===u&&x.password===p);
- if(!user){errorMsg.textContent="Username / password salah";return}
- if(user.role==="admin"){location.href="admin.html";return}
- if(!kodeMapping[k]){errorMsg.textContent="Kode test tidak valid";return}
+ if(!user){errorMsg.textContent="Username / password salah";return;}
+ if(user.role==="admin"){location.href="admin.html";return;}
+ if(!kodeMapping[k]){errorMsg.textContent="Kode test tidak valid";return;}
 
- fetch(kodeMapping[k]).then(r=>r.json()).then(d=>{
-  questions=d;
-  loginPage.classList.add("hidden");
-  quizPage.classList.remove("hidden");
-  startQuiz();
- }).catch(()=>errorMsg.textContent="Soal tidak ditemukan");
+ fetch(kodeMapping[k])
+  .then(r=>r.json())
+  .then(d=>{
+    questions=d;
+    loginPage.classList.add("hidden");
+    quizPage.classList.remove("hidden");
+    startQuiz();
+  })
+  .catch(()=>errorMsg.textContent="Soal tidak ditemukan");
 }
 
 /* ===== QUIZ ===== */
 function startQuiz(){
- i=0;score=0;timeLeft=3000;
+ index=0;score=0;timeLeft=3000;
  updateTimer();
  timer=setInterval(()=>{
   timeLeft--;updateTimer();
@@ -153,25 +199,23 @@ function updateTimer(){
  timer.textContent=`${m}:${s}`;
 }
 function next(){
- if(i>=questions.length){finish();return}
- currentWord.textContent=questions[i].korea;
+ if(index>=questions.length){finish();return;}
+ currentWord.textContent=questions[index].korea;
  answerInput.value="";
 }
 function submitAnswer(){
- if(answerInput.value.trim().toLowerCase()===questions[i].indo.toLowerCase())score++;
- i++;
- progressBar.style.width=(i/questions.length*100)+"%";
+ if(answerInput.value.trim().toLowerCase()===questions[index].indo.toLowerCase())score++;
+ index++;
+ progressBar.style.width=(index/questions.length*100)+"%";
  next();
 }
 function finish(){
  clearInterval(timer);
  questionArea.classList.add("hidden");
  resultArea.classList.remove("hidden");
- scoreText.textContent=`Skor ${score}/${questions.length}`;
+ scoreText.textContent=`Skor: ${score}/${questions.length}`;
 }
 </script>
 
 </body>
 </html>
-
-
