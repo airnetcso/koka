@@ -166,18 +166,20 @@
     }
 
     function startQuiz() {
-      currentIndex = 0;
-      score = 0;
-      wrongList = [];
-      timeLeft = 1800;
-      updateTimer();
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimer();
-        if (timeLeft <= 0) finishQuiz();
-      }, 1000);
-      nextQuestion();
+    currentIndex = 0;
+    score = 0;
+    wrongList = [];
+    timeLeft = 3000;  // 50 menit = 3000 detik
+    updateTimer();
+    timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) {
+      finishQuiz();
     }
+   }, 1000);
+   nextQuestion();
+   }
 
     function updateTimer() {
       const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
@@ -298,6 +300,7 @@
   </script>
 </body>
 </html>
+
 
 
 
