@@ -7,136 +7,80 @@
 
 <style>
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;overflow:hidden}
+html,body{height:100%;margin:0}
 body{
   font-family:'Segoe UI',system-ui,Arial,sans-serif;
   background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
   background-size:cover;
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
-  padding:20px;
   color:#fff;
-  position:relative;
 }
 body::before{
   content:'';
   position:absolute;
   inset:0;
   background:rgba(0,0,0,.35);
-  z-index:1;
 }
 .container{
   position:relative;
-  z-index:2;
-  width:80%;
-  max-width:440px;
-  max-height:90vh;
-  overflow-y:auto;
+  z-index:1;
+  width:420px;
   background:rgba(255,255,255,.15);
-  backdrop-filter:blur(14px);
-  border-radius:24px;
-  padding:40px 30px;
-  box-shadow:0 15px 40px rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  padding:35px;
+  border-radius:22px;
 }
-h1{text-align:center;margin-bottom:30px}
 input,button{
   width:100%;
-  height:54px;
+  height:52px;
   border-radius:14px;
   font-size:16px;
 }
 input{
-  padding:0 16px;
   margin-bottom:14px;
+  padding:0 16px;
   border:2px solid rgba(255,255,255,.4);
   background:rgba(255,255,255,.12);
   color:#fff;
 }
-input::placeholder{color:rgba(255,255,255,.75)}
 button{
-  margin-top:8px;
   border:none;
   font-weight:bold;
-  cursor:pointer;
   color:#fff;
   background:linear-gradient(90deg,#10b981,#059669);
 }
-.error{
-  color:#fecaca;
-  text-align:center;
-  margin-bottom:12px;
-}
 .hidden{display:none}
-#timer{
-  text-align:center;
-  font-size:28px;
-  margin:18px 0;
-  font-weight:bold;
-  background:rgba(220,38,38,.25);
-  padding:12px;
-  border-radius:12px;
-}
-.progress{
-  height:12px;
-  background:rgba(255,255,255,.2);
-  border-radius:6px;
-  overflow:hidden;
-  margin-bottom:20px;
-}
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#10b981,#059669);
-}
-.question strong{
-  display:block;
-  text-align:center;
-  font-size:42px;
-  margin:30px 0;
-}
-.footer{
-  position:relative;
-  z-index:2;
-  margin-top:30px;
-  font-size:14px;
-}
+#error{color:#fecaca;text-align:center;margin-bottom:10px}
+#timer{text-align:center;font-size:26px;margin:15px 0}
+.progress{height:10px;background:rgba(255,255,255,.2);border-radius:5px;overflow:hidden}
+.bar{height:100%;width:0;background:#10b981}
+.question strong{font-size:40px;display:block;text-align:center;margin:25px 0}
 </style>
 </head>
 
 <body>
 
-<div class="container" id="loginPage">
-  <h1>TEST KOSA KATA</h1>
-  <input id="username" placeholder="Username / 이름">
-  <input id="password" type="password" placeholder="Password / 비밀먼호">
-  <input id="kodeSoal" placeholder="Kode Test / 시험코드">
-  <div class="error" id="errorMsg"></div>
-  <button onclick="login()">MULAI / 시작</button>
+<div class="container" id="loginBox">
+  <h2 align="center">LOGIN TEST</h2>
+  <input id="user" placeholder="Username">
+  <input id="pass" type="password" placeholder="Password">
+  <input id="kode" placeholder="Kode Test">
+  <div id="error"></div>
+  <button onclick="login()">MASUK</button>
 </div>
 
-<div class="container hidden" id="quizPage">
-  <h1>TEST KOSA KATA</h1>
+<div class="container hidden" id="quizBox">
+  <h2 align="center">TEST KOSA KATA</h2>
   <div id="timer">50:00</div>
-  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-  <div id="questionArea">
-    <div class="question"><strong id="currentWord"></strong></div>
-    <input id="answerInput" placeholder="Jawaban">
-    <button onclick="submitAnswer()">SUBMIT</button>
-  </div>
-  <div id="resultArea" class="hidden">
-    <h2>Hasil Test</h2>
-    <p id="scoreText"></p>
-    <button onclick="location.reload()">ULANGI</button>
-  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="question"><strong id="word"></strong></div>
+  <input id="answer" placeholder="Jawaban">
+  <button onclick="submit()">SUBMIT</button>
 </div>
-
-<div class="footer">©2026 Denzuka - Kim Jongun. All Rights Reserved</div>
 
 <script>
-/* ===== USER ===== */
 const users=[
  {username:"user1",password:"12345"},
  {username:"hanarizka",password:"Nungkihana24!"},
@@ -151,72 +95,76 @@ const users=[
  {username:"Hamdan106",password:"Fukuo106"}
 ];
 
-/* ===== KODE SOAL ===== */
-const kodeMapping={
- "H29976":"soal1.json",
- "R43213":"soal2.json",
- "Z21985":"soal3.json"
+const kodeSoal={
+ H29976:"./soal1.json",
+ R43213:"./soal2.json",
+ Z21985:"./soal3.json"
 };
 
-let questions=[],index=0,score=0,timeLeft=3000,timer;
+let soal=[],i=0,score=0,time=3000,timer;
 
-/* ===== LOGIN ===== */
 function login(){
- const u=username.value.trim();
- const p=password.value.trim();
- const k=kodeSoal.value.trim().toUpperCase();
- errorMsg.textContent="";
- if(!u||!p||!k){errorMsg.textContent="Lengkapi semua kolom";return;}
- const user=users.find(x=>x.username===u&&x.password===p);
- if(!user){errorMsg.textContent="Username / password salah";return;}
- if(user.role==="admin"){location.href="admin.html";return;}
- if(!kodeMapping[k]){errorMsg.textContent="Kode test tidak valid";return;}
+ const u=user.value.trim();
+ const p=pass.value.trim();
+ const k=kode.value.trim().toUpperCase();
+ error.textContent="";
 
- fetch(kodeMapping[k])
-  .then(r=>r.json())
-  .then(d=>{
-    questions=d;
-    loginPage.classList.add("hidden");
-    quizPage.classList.remove("hidden");
-    startQuiz();
+ const akun=users.find(x=>x.username===u&&x.password===p);
+ if(!akun){error.textContent="Login salah";return;}
+
+ if(akun.role==="admin"){location.href="admin.html";return;}
+ if(!kodeSoal[k]){error.textContent="Kode test salah";return;}
+
+ fetch(kodeSoal[k]+"?v="+Date.now())
+  .then(r=>{
+    if(!r.ok) throw "Soal tidak ditemukan";
+    return r.json();
   })
-  .catch(()=>errorMsg.textContent="Soal tidak ditemukan");
+  .then(d=>{
+    if(!Array.isArray(d)) throw "Format JSON salah";
+    soal=d;
+    loginBox.classList.add("hidden");
+    quizBox.classList.remove("hidden");
+    start();
+  })
+  .catch(e=>error.textContent=e);
 }
 
-/* ===== QUIZ ===== */
-function startQuiz(){
- index=0;score=0;timeLeft=3000;
- updateTimer();
+function start(){
+ i=0;score=0;time=3000;
  timer=setInterval(()=>{
-  timeLeft--;updateTimer();
-  if(timeLeft<=0)finish();
+  time--;
+  timerDiv();
+  if(time<=0)finish();
  },1000);
  next();
 }
-function updateTimer(){
- const m=String(Math.floor(timeLeft/60)).padStart(2,"0");
- const s=String(timeLeft%60).padStart(2,"0");
+
+function timerDiv(){
+ const m=String(Math.floor(time/60)).padStart(2,"0");
+ const s=String(time%60).padStart(2,"0");
  timer.textContent=`${m}:${s}`;
 }
+
 function next(){
- if(index>=questions.length){finish();return;}
- currentWord.textContent=questions[index].korea;
- answerInput.value="";
+ if(i>=soal.length){finish();return;}
+ word.textContent=soal[i].korea;
+ answer.value="";
 }
-function submitAnswer(){
- if(answerInput.value.trim().toLowerCase()===questions[index].indo.toLowerCase())score++;
- index++;
- progressBar.style.width=(index/questions.length*100)+"%";
+
+function submit(){
+ if(answer.value.trim().toLowerCase()===soal[i].indo.toLowerCase())score++;
+ i++;
+ bar.style.width=(i/soal.length*100)+"%";
  next();
 }
+
 function finish(){
  clearInterval(timer);
- questionArea.classList.add("hidden");
- resultArea.classList.remove("hidden");
- scoreText.textContent=`Skor: ${score}/${questions.length}`;
+ alert(`Skor kamu: ${score}/${soal.length}`);
+ location.reload();
 }
 </script>
 
 </body>
 </html>
-
