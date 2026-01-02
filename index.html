@@ -59,16 +59,15 @@ button{
 
 <body>
 
-<div class="container" id="loginBox">
-  <h2 align="center">LOGIN TEST</h2>
-  <input id="user" placeholder="Username / 이름">
-  <input id="pass" type="password" placeholder="Password / 비밀번호">
-  <input id="kode" placeholder="Kode Test / 시험코드">
-  <div id="error"></div>
-  <button onclick="login()">MULAI / 시작</button>
-</div>
-
-<div class="container hidden" id="quizPage">
+<div class="container" id="loginPage">
+    <h1>TEST KOSA KATA</h1>
+    <input type="text" id="username" placeholder="Username / 이름" autocomplete="off">
+    <input type="password" id="password" placeholder="Password / 비밀번호" autocomplete="off">
+    <input type="text" id="kodeSoal" placeholder="Kode Test / 시험코드" autocomplete="off">
+    <div class="error" id="errorMsg"></div>
+    <button onclick="login()">MULAI / 시작</button>
+  </div>
+  <div class="container hidden" id="quizPage">
     <h1>TEST KOSA KATA</h1>
     <div id="timer">30:00</div>
     <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
@@ -177,6 +176,7 @@ function finish(){
 
 </body>
 </html>
+
 
 
 
