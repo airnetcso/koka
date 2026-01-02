@@ -4,30 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TEST KOSA KATA</title>
-
 <style>
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
+html,body{height:100%;margin:0;padding:0}
 body{
   font-family:'Segoe UI',system-ui,Arial,sans-serif;
   background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
   background-size:cover;
   display:flex;
+  flex-direction:column; /* Agar footer bisa di bawah */
   justify-content:center;
   align-items:center;
   color:#fff;
+  position:relative;
 }
 body::before{
   content:'';
   position:absolute;
   inset:0;
   background:rgba(0,0,0,.35);
+  z-index:1;
 }
 .container {
-      position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
-      -webkit-overflow-scrolling: touch; background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px); border-radius: 24px; padding: 40px 30px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.18); animation: fadeIn 0.8s ease-out;
+  position: relative; 
+  z-index: 2; 
+  width: 80%; 
+  max-width: 440px; 
+  max-height: 90vh; 
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; 
+  background: rgba(255,255,255,0.15); 
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px); 
+  border-radius: 24px; 
+  padding: 40px 30px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.35); 
+  border: 1px solid rgba(255,255,255,0.18); 
+  animation: fadeIn 0.8s ease-out;
 }
 input,button{
   width:100%;
@@ -42,21 +55,43 @@ input{
   background:rgba(255,255,255,.12);
   color:#fff;
 }
+/* Placeholder jadi hitam pekat */
+input::placeholder {
+  color: #000000 !important;
+  opacity: 1;
+}
+input::-webkit-input-placeholder { color: #000000 !important; }
+input:-moz-placeholder { color: #000000 !important; }
+input::-moz-placeholder { color: #000000 !important; }
+input:-ms-input-placeholder { color: #000000 !important; }
+
 button{
   border:none;
   font-weight:bold;
   color:#fff;
   background:linear-gradient(90deg,#10b981,#059669);
+  cursor:pointer;
 }
 .hidden{display:none}
 #error{color:#fecaca;text-align:center;margin-bottom:10px}
 #timer{text-align:center;font-size:26px;margin:15px 0}
-.progress{height:10px;background:rgba(255,255,255,.2);border-radius:5px;overflow:hidden}
-.bar{height:100%;width:0;background:#10b981}
+.progress{height:10px;background:rgba(255,255,255,.2);border-radius:5px;overflow:hidden;margin:20px 0}
+.bar{height:100%;width:0;background:#10b981;transition:width .3s}
 .question strong{font-size:40px;display:block;text-align:center;margin:25px 0}
+
+/* Footer Copyright */
+.footer {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 14px;
+  color: #cccccc;
+  margin-top: 30px;
+}
 </style>
 </head>
-
 <body>
 
 <div class="container" id="loginBox">
@@ -76,6 +111,9 @@ button{
   <input id="answer" placeholder="Jawaban">
   <button onclick="submit()">SUBMIT</button>
 </div>
+
+<!-- Copyright Footer -->
+<div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
 const users=[
@@ -102,19 +140,26 @@ const kodeSoal={
 };
 
 let soal=[],i=0,score=0,time=3000,timer;
+const loginBox = document.getElementById("loginBox");
+const quizBox = document.getElementById("quizBox");
+const user = document.getElementById("user");
+const pass = document.getElementById("pass");
+const kode = document.getElementById("kode");
+const error = document.getElementById("error");
+const timerDiv = document.getElementById("timer");
+const bar = document.getElementById("bar");
+const word = document.getElementById("word");
+const answer = document.getElementById("answer");
 
 function login(){
  const u=user.value.trim();
  const p=pass.value.trim();
  const k=kode.value.trim().toUpperCase();
  error.textContent="";
-
  const akun=users.find(x=>x.username===u&&x.password===p);
  if(!akun){error.textContent="Login salah";return;}
-
  if(akun.role==="admin"){location.href="admin.html";return;}
  if(!kodeSoal[k]){error.textContent="Kode test salah";return;}
-
  fetch(kodeSoal[k]+"?v="+Date.now())
   .then(r=>{
     if(!r.ok) throw "Soal tidak ditemukan";
@@ -143,19 +188,20 @@ function start(){
 function timerDiv(){
  const m=String(Math.floor(time/60)).padStart(2,"0");
  const s=String(time%60).padStart(2,"0");
- timer.textContent=`${m}:${s}`;
+ timerDiv.textContent=`${m}:${s}`;
 }
 
 function next(){
  if(i>=soal.length){finish();return;}
  word.textContent=soal[i].korea;
  answer.value="";
+ answer.focus();
+ bar.style.width=(i/soal.length*100)+"%";
 }
 
 function submit(){
  if(answer.value.trim().toLowerCase()===soal[i].indo.toLowerCase())score++;
  i++;
- bar.style.width=(i/soal.length*100)+"%";
  next();
 }
 
@@ -164,9 +210,12 @@ function finish(){
  alert(`Skor kamu: ${score}/${soal.length}`);
  location.reload();
 }
+
+// Enter untuk submit di quiz
+answer.addEventListener("keyup", function(e){
+  if(e.key === "Enter") submit();
+});
 </script>
 
 </body>
 </html>
-
-
