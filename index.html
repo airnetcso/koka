@@ -1,40 +1,130 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TEST KOSA KATA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEST KOSA KATA</title>
 
-  <style>
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-    body {
-      font-family: 'Segoe UI', system-ui, Arial, sans-serif;
-      background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
-      background-size: cover;
-      display: flex; justify-content: center; align-items: center;
-      color: #fff; position: relative;
-    }
-    body::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,.3); z-index:1; }
-    .container {
-      position: relative; z-index: 2;
-      width: 90%; max-width: 440px;
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(14px);
-      border-radius: 24px;
-      padding: 40px 30px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.35);
-      animation: fadeIn .8s;
-    }
-    h1 { text-align:center; margin-bottom:30px; }
-    input { width:100%; padding:16px; margin:12px 0; font-size:18px; border-radius:12px; border:none; }
-    button { width:100%; padding:16px; font-size:20px; border-radius:12px; border:none; cursor:pointer;
-      background:linear-gradient(90deg,#10b981,#059669); color:#fff; font-weight:bold; }
-    .hidden { display:none; }
-    .error { margin-top:12px; text-align:center; color:#ff6b6b; font-weight:bold; }
-    #timer { text-align:center; font-size:28px; margin:20px 0; }
-    strong { font-size:42px; display:block; text-align:center; margin:30px 0; }
-  </style>
+<style>
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(20px)}
+  to {opacity:1; transform:translateY(0)}
+}
+
+html,body{
+  height:100%; margin:0; font-family:'Segoe UI',system-ui,Arial;
+}
+
+body{
+  background:url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center/cover fixed;
+  display:flex; justify-content:center; align-items:center;
+  color:#fff; position:relative;
+}
+
+body::before{
+  content:""; position:absolute; inset:0;
+  background:rgba(0,0,0,.35); z-index:0;
+}
+
+/* ===== CARD ===== */
+.container{
+  position:relative; z-index:1;
+  width:90%; max-width:420px;
+  padding:40px 32px;
+  border-radius:26px;
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.22),
+    rgba(255,255,255,.08)
+  );
+  backdrop-filter:blur(18px);
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
+  animation:fadeIn .8s ease;
+}
+
+/* ===== TITLE ===== */
+h1{
+  margin:0 0 10px;
+  text-align:center;
+  font-size:32px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+.subtitle{
+  text-align:center;
+  font-size:14px;
+  opacity:.85;
+  margin-bottom:30px;
+}
+
+/* ===== INPUT ===== */
+.input-group{
+  margin-bottom:16px;
+}
+input{
+  width:100%;
+  padding:16px 18px;
+  border-radius:14px;
+  border:1.5px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:16px;
+  outline:none;
+  transition:.25s;
+}
+input::placeholder{color:rgba(255,255,255,.75)}
+input:focus{
+  border-color:#fff;
+  background:rgba(255,255,255,.22);
+  box-shadow:0 0 0 4px rgba(255,255,255,.15);
+}
+
+/* ===== BUTTON ===== */
+button{
+  width:100%;
+  padding:16px;
+  border-radius:16px;
+  border:none;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(90deg,#10b981,#059669);
+  box-shadow:0 12px 30px rgba(16,185,129,.45);
+  transition:.25s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 40px rgba(16,185,129,.6);
+}
+
+/* ===== ERROR ===== */
+.error{
+  margin-top:14px;
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:600;
+  background:rgba(220,38,38,.25);
+  color:#fee2e2;
+}
+
+.hidden{display:none}
+
+/* ===== QUIZ ===== */
+#timer{
+  text-align:center;
+  font-size:28px;
+  font-weight:800;
+  margin:20px 0;
+}
+strong{
+  display:block;
+  font-size:42px;
+  text-align:center;
+  margin:30px 0;
+}
+</style>
 </head>
 
 <body>
@@ -42,11 +132,20 @@
 <!-- LOGIN -->
 <div class="container" id="loginPage">
   <h1>TEST KOSA KATA</h1>
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
-  <input id="kodeSoal" placeholder="Kode Test">
-  <div class="error" id="errorMsg"></div>
-  <button onclick="login()">MULAI</button>
+  <div class="subtitle">Vocabulary Test System</div>
+
+  <div class="input-group">
+    <input id="username" placeholder="Username">
+  </div>
+  <div class="input-group">
+    <input id="password" type="password" placeholder="Password">
+  </div>
+  <div class="input-group">
+    <input id="kodeSoal" placeholder="Kode Test">
+  </div>
+
+  <button onclick="login()">MULAI TEST</button>
+  <div class="error hidden" id="errorMsg"></div>
 </div>
 
 <!-- QUIZ -->
@@ -59,95 +158,74 @@
 </div>
 
 <script>
-/* ===== USER ===== */
-const users = [
-  {username:"user1",password:"12345"},
-  {username:"hanarizka",password:"Nungkihana24!"},
-  {username:"user3",password:"12345"},
-  {username:"siswa01",password:"12345"},
-  {username:"windi",password:"Windi2000"},
-  {username:"rismaya97",password:"bahasakorea"},
-  {username:"sita77",password:"minyooki"},
-  {username:"Aini185",password:"Doraemon"},
-  {username:"Hangeulfei",password:"studykorea02"},
-  {username:"Hamdan106",password:"Fukuo106"},
-  {username:"admin",password:"admin123",role:"admin"}
+const users=[
+ {username:"user1",password:"12345"},
+ {username:"hanarizka",password:"Nungkihana24!"},
+ {username:"user3",password:"12345"},
+ {username:"siswa01",password:"12345"},
+ {username:"windi",password:"Windi2000"},
+ {username:"rismaya97",password:"bahasakorea"},
+ {username:"sita77",password:"minyooki"},
+ {username:"Aini185",password:"Doraemon"},
+ {username:"Hangeulfei",password:"studykorea02"},
+ {username:"Hamdan106",password:"Fukuo106"},
+ {username:"admin",password:"admin123",role:"admin"}
 ];
 
-/* ===== KODE SOAL ===== */
-const kodeMapping = {
-  "H29976":"soal1.json",
-  "R43213":"soal2.json",
-  "Z21985":"soal3.json"
+const kodeMapping={
+ H29976:"soal1.json",
+ R43213:"soal2.json",
+ Z21985:"soal3.json"
 };
 
-let questions=[], index=0, score=0;
-let timeLeft=3000, timerInt;
+let questions=[],idx=0,score=0,timeLeft=3000,timerInt;
 
-/* ===== LOGIN ===== */
 function login(){
+  errorMsg.classList.add("hidden");
   const u=username.value.trim();
   const p=password.value.trim();
   const k=kodeSoal.value.trim().toUpperCase();
-  errorMsg.textContent="";
 
-  const user=users.find(x=>x.username===u && x.password===p);
-  if(!user) return errorMsg.textContent="Username / Password salah";
-
-  if(user.role==="admin"){
-    location.href="admin.html"; return;
+  const user=users.find(x=>x.username===u&&x.password===p);
+  if(!user){
+    errorMsg.textContent="Username atau password salah";
+    errorMsg.classList.remove("hidden"); return;
+  }
+  if(user.role==="admin"){location.href="admin.html";return;}
+  if(!kodeMapping[k]){
+    errorMsg.textContent="Kode soal tidak valid";
+    errorMsg.classList.remove("hidden"); return;
   }
 
-  if(!kodeMapping[k]) return errorMsg.textContent="Kode soal tidak valid";
-
-  fetch(kodeMapping[k])
-    .then(r=>r.json())
-    .then(data=>{
-      questions=data.sort(()=>Math.random()-0.5);
-      loginPage.classList.add("hidden");
-      quizPage.classList.remove("hidden");
-      startQuiz();
-    })
-    .catch(()=>errorMsg.textContent="Soal tidak ditemukan");
+  fetch(kodeMapping[k]).then(r=>r.json()).then(d=>{
+    questions=d.sort(()=>Math.random()-0.5);
+    loginPage.classList.add("hidden");
+    quizPage.classList.remove("hidden");
+    startQuiz();
+  });
 }
 
-/* ===== QUIZ ===== */
 function startQuiz(){
-  index=0; score=0;
-  showQuestion();
-  startTimer();
+  idx=0; score=0;
+  showQuestion(); startTimer();
 }
-
 function showQuestion(){
-  if(index>=questions.length){
-    alert("Selesai!\nSkor: "+score+"/"+questions.length);
-    location.reload();
-    return;
+  if(idx>=questions.length){
+    alert(`Selesai!\nSkor: ${score}/${questions.length}`);
+    location.reload(); return;
   }
-  currentWord.textContent=questions[index].korea;
-  answerInput.value="";
-  answerInput.focus();
+  currentWord.textContent=questions[idx].korea;
+  answerInput.value=""; answerInput.focus();
 }
-
 function submitAnswer(){
-  if(answerInput.value.trim().toLowerCase()===questions[index].indo.toLowerCase()){
-    score++;
-  }
-  index++;
-  showQuestion();
+  if(answerInput.value.trim().toLowerCase()===questions[idx].indo.toLowerCase()) score++;
+  idx++; showQuestion();
 }
-
-/* ===== TIMER ===== */
 function startTimer(){
   updateTimer();
   timerInt=setInterval(()=>{
-    timeLeft--;
-    updateTimer();
-    if(timeLeft<=0){
-      clearInterval(timerInt);
-      alert("Waktu habis!");
-      location.reload();
-    }
+    timeLeft--; updateTimer();
+    if(timeLeft<=0){clearInterval(timerInt);alert("Waktu habis!");location.reload();}
   },1000);
 }
 function updateTimer(){
