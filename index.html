@@ -150,8 +150,8 @@
  const user = users.find(x => x.username === username && x.password === pass);
 
  if (user && user.role === "admin") {
-   // PERUBAHAN: Admin redirect ke admin-local.html (cek cepat)
-   location.href = "admin-local.html";
+   // PERUBAHAN: Admin langsung ke admin pusat di repo terpisah
+   location.href = "https://airnetcso.github.io/admin/";
    return;
  }
 
@@ -271,7 +271,7 @@
  params.append("entry.[GANTI5]", `${percent}%`);
  fetch(postUrl, {method: "POST", mode: "no-cors", body: params}).catch(() => {});
 
- // === INTEGRASI ADMIN PUSAT (tetap jalan) ===
+ // === INTEGRASI ADMIN PUSAT (sync data ke repo admin terpisah) ===
  const resultData = {
    username: username,
    kode: kodeSoal || "-",
