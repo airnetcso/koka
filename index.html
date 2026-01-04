@@ -146,6 +146,16 @@
  if (!username || !pass || !kodeSoal) return error.textContent = "Lengkapi semua kolom!";
  const fileName = kodeMapping[kodeSoal];
  if (!fileName) return error.textContent = "Kode akses tidak valid!";
+
+ const user = users.find(x => x.username === username && x.password === pass);
+
+ if (user && user.role === "admin") {
+   // PERUBAHAN: Admin redirect ke admin-local.html (cek cepat)
+   location.href = "admin-local.html";
+   return;
+ }
+
+ // Kalau bukan admin, lanjut ke quiz
  loadQuestions(fileName)
  .then(() => {
  document.getElementById("loginPage").classList.add("hidden");
@@ -261,7 +271,7 @@
  params.append("entry.[GANTI5]", `${percent}%`);
  fetch(postUrl, {method: "POST", mode: "no-cors", body: params}).catch(() => {});
 
- // === INTEGRASI ADMIN PUSAT (INI YANG PENTING) ===
+ // === INTEGRASI ADMIN PUSAT (tetap jalan) ===
  const resultData = {
    username: username,
    kode: kodeSoal || "-",
