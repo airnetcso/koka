@@ -103,11 +103,9 @@
  "setrika": ["gosokan"],
  "gorden": ["tirai", "curtain"]
  };
-
  function normalizeAnswer(answer) {
    return answer.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
  }
-
  function getNormalizedCorrectAnswers(q) {
    if (Array.isArray(q.indo)) {
      return q.indo.map(ans => normalizeAnswer(ans));
@@ -115,7 +113,6 @@
      return [normalizeAnswer(q.indo)];
    }
  }
-
  function levenshtein(a, b) {
    const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
    for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
@@ -128,14 +125,12 @@
    }
    return matrix[b.length][a.length];
  }
-
  async function loadQuestions(fileName) {
    const response = await fetch(fileName);
    if (!response.ok) throw new Error("File soal tidak ditemukan atau error");
    const data = await response.json();
    questions = data.sort(() => 0.5 - Math.random());
  }
-
  function login() {
    username = document.getElementById("username").value.trim();
    const pass = document.getElementById("password").value.trim();
@@ -161,7 +156,6 @@
      console.error(err);
    });
  }
-
  function startQuiz() {
    currentIndex = 0;
    score = 0;
@@ -175,18 +169,15 @@
    }, 1000);
    nextQuestion();
  }
-
  function updateTimer() {
    const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
    const s = String(timeLeft % 60).padStart(2, '0');
    document.getElementById("timer").textContent = `${m}:${s}`;
  }
-
  function updateProgress() {
    const percent = ((currentIndex) / questions.length) * 100;
    document.getElementById("progressBar").style.width = percent + "%";
  }
-
  function nextQuestion() {
    if (currentIndex >= questions.length) {
      finishQuiz();
@@ -197,20 +188,16 @@
    document.getElementById("answerInput").focus();
    updateProgress();
  }
-
  function submitAnswer() {
    const answer = document.getElementById("answerInput").value.trim();
    if (!answer) return;
    checkAnswer(answer);
  }
-
  function checkAnswer(userAnswer) {
    const q = questions[currentIndex];
    const normUser = normalizeAnswer(userAnswer);
    const correctAnswers = getNormalizedCorrectAnswers(q);
-
    let isCorrect = correctAnswers.some(correct => correct === normUser);
-
    if (!isCorrect) {
      for (const correct of correctAnswers) {
        const distance = levenshtein(normUser, correct);
@@ -220,18 +207,16 @@
        }
      }
    }
-
    // Synonym bonus
    for (const [key, vals] of Object.entries(synonyms)) {
      const normKey = normalizeAnswer(key);
-     const synonymMatch = normUser === normKey || 
+     const synonymMatch = normUser === normKey ||
        vals.some(v => normUser.includes(v.toLowerCase()) || v.toLowerCase().includes(normUser));
      if (synonymMatch && correctAnswers.some(c => c === normKey)) {
        isCorrect = true;
        break;
      }
    }
-
    if (!isCorrect) {
      wrongList.push({
        word: q.korea,
@@ -241,11 +226,9 @@
    } else {
      score++;
    }
-
    currentIndex++;
    nextQuestion();
  }
-
  function finishQuiz() {
    clearInterval(timerInterval);
    document.getElementById("questionArea").classList.add("hidden");
@@ -274,16 +257,24 @@
        wrongDiv.innerHTML += `• ${item.word} → ${item.correct} (jawaban kamu: ${item.your})<br>`;
      });
    }
-   // Google Sheets
-   const postUrl = "https://docs.google.com/forms/d/e/[GANTI_DENGAN_FORM_ID_KAMU]/formResponse";
-   const params = new URLSearchParams();
-   params.append("entry.[GANTI1]", username);
-   params.append("entry.[GANTI2]", kodeSoal || "Tidak ada");
-   params.append("entry.[GANTI3]", `${score}/${questions.length}`);
-   params.append("entry.[GANTI4]", "Latihan Kosa Kata");
-   params.append("entry.[GANTI5]", `${percent}%`);
-   fetch(postUrl, {method: "POST", mode: "no-cors", body: params}).catch(() => {});
-   // Local storage sync
+
+   // === KIRIM KE WHATSAPP GURU OTOMATIS ===
+   const nomorGuru = "628385551800"; // Nomor WA lo
+   const pesanWA = encodeURIComponent(
+`📚 *Hasil Test Kosa Kata Korea* 📚
+
+👤 Nama Siswa: ${username}
+🔑 Kode Soal: ${kodeSoal || "-"}
+📊 Skor: ${score}/${questions.length}
+🏆 Persentase: ${percent}%
+⏰ Waktu Submit: ${new Date().toLocaleString('id-ID')}
+
+Terima kasih sudah mengerjakan! 💪
+- Aplikasi /koka by Denzuka`
+   );
+   window.open(`https://api.whatsapp.com/send?phone=${nomorGuru}&text=${pesanWA}`, "_blank");
+
+   // Local storage sync (tetap ada)
    const resultData = {
      username: username,
      kode: kodeSoal || "-",
@@ -303,7 +294,6 @@
      localStorage.setItem("quizResults", JSON.stringify(allResults));
    }
  }
-
  function restartQuiz() {
    document.getElementById("resultArea").classList.add("hidden");
    document.getElementById("questionArea").classList.remove("hidden");
