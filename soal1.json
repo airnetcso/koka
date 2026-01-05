@@ -1,5 +1,4 @@
 [
-  [
   {"korea":"가다","indo":["pergi","berangkat"]},
   {"korea":"오다","indo":["datang"]},
   {"korea":"먹다","indo":["makan"]},
@@ -200,5 +199,4 @@
   {"korea":"고장하다","indo":["merusak","rusak"]},
   {"korea":"배달하다","indo":["mengantar barang","antar barang"]},
   {"korea":"노크하다","indo":["mengetuk pintu","ketuk pintu"]}
-]
 ]
