@@ -65,7 +65,6 @@
  </div>
  </div>
  <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
-
  <script>
  const users=[
  {username:"user1",password:"12345"},{username:"hanarizka",password:"Nungkihana24!"},{username:"Heri",password:"heri99"},
@@ -74,7 +73,6 @@
  {username:"sita77",password:"minyooki"},{username:"Aini185",password:"Doraemon"},{username:"Hangeulfei",password:"studykorea02"},
  {username:"Hamdan106",password:"Fukuo106"}
  ];
-
  const kodeMapping = {
  "H050126": "soal1.json",
  "SAREWAE": "test.json",
@@ -89,7 +87,6 @@
  let timeLeft = 3000;
  let username = "";
  let kodeSoal = "";
-
  const synonyms = {
  "penyedot debu": ["vakum", "vacum", "vacuum", "vacuum cleaner", "pengisap debu", "penghisap debu"],
  "kulkas": ["lemari es", "refrigerator", "pendingin"],
@@ -108,199 +105,214 @@
  };
 
  function normalizeAnswer(answer) {
- let norm = answer.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
- for (const [key, vals] of Object.entries(synonyms)) {
- if (norm === key || vals.some(v => norm.includes(v.toLowerCase()) || v.toLowerCase().includes(norm))) {
- return key;
+   return answer.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
  }
- }
- return norm;
+
+ function getNormalizedCorrectAnswers(q) {
+   if (Array.isArray(q.indo)) {
+     return q.indo.map(ans => normalizeAnswer(ans));
+   } else {
+     return [normalizeAnswer(q.indo)];
+   }
  }
 
  function levenshtein(a, b) {
- const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
- for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
- for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
- for (let j = 1; j <= b.length; j++) {
- for (let i = 1; i <= a.length; i++) {
- const indicator = a[i-1] === b[j-1] ? 0 : 1;
- matrix[j][i] = Math.min(matrix[j][i-1] + 1, matrix[j-1][i] + 1, matrix[j-1][i-1] + indicator);
- }
- }
- return matrix[b.length][a.length];
+   const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
+   for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+   for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+   for (let j = 1; j <= b.length; j++) {
+     for (let i = 1; i <= a.length; i++) {
+       const indicator = a[i-1] === b[j-1] ? 0 : 1;
+       matrix[j][i] = Math.min(matrix[j][i-1] + 1, matrix[j-1][i] + 1, matrix[j-1][i-1] + indicator);
+     }
+   }
+   return matrix[b.length][a.length];
  }
 
  async function loadQuestions(fileName) {
- const response = await fetch(fileName);
- if (!response.ok) throw new Error("File soal tidak ditemukan atau error");
- const data = await response.json();
- questions = data.sort(() => 0.5 - Math.random());
+   const response = await fetch(fileName);
+   if (!response.ok) throw new Error("File soal tidak ditemukan atau error");
+   const data = await response.json();
+   questions = data.sort(() => 0.5 - Math.random());
  }
 
  function login() {
- username = document.getElementById("username").value.trim();
- const pass = document.getElementById("password").value.trim();
- kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
- const error = document.getElementById("errorMsg");
- error.textContent = "";
- if (!username || !pass || !kodeSoal) return error.textContent = "Lengkapi semua kolom!";
- const fileName = kodeMapping[kodeSoal];
- if (!fileName) return error.textContent = "Kode akses tidak valid!";
-
- const user = users.find(x => x.username === username && x.password === pass);
-
- if (user && user.role === "admin") {
-   // PERUBAHAN: Admin langsung ke admin pusat di repo terpisah
-   location.href = "https://airnetcso.github.io/admin/";
-   return;
- }
-
- // Kalau bukan admin, lanjut ke quiz
- loadQuestions(fileName)
- .then(() => {
- document.getElementById("loginPage").classList.add("hidden");
- document.getElementById("quizPage").classList.remove("hidden");
- startQuiz();
- })
- .catch(err => {
- error.textContent = "Gagal memuat soal: " + err.message;
- console.error(err);
- });
+   username = document.getElementById("username").value.trim();
+   const pass = document.getElementById("password").value.trim();
+   kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
+   const error = document.getElementById("errorMsg");
+   error.textContent = "";
+   if (!username || !pass || !kodeSoal) return error.textContent = "Lengkapi semua kolom!";
+   const fileName = kodeMapping[kodeSoal];
+   if (!fileName) return error.textContent = "Kode akses tidak valid!";
+   const user = users.find(x => x.username === username && x.password === pass);
+   if (user && user.role === "admin") {
+     location.href = "https://airnetcso.github.io/admin/";
+     return;
+   }
+   loadQuestions(fileName)
+   .then(() => {
+     document.getElementById("loginPage").classList.add("hidden");
+     document.getElementById("quizPage").classList.remove("hidden");
+     startQuiz();
+   })
+   .catch(err => {
+     error.textContent = "Gagal memuat soal: " + err.message;
+     console.error(err);
+   });
  }
 
  function startQuiz() {
- currentIndex = 0;
- score = 0;
- wrongList = [];
- timeLeft = 3000;
- updateTimer();
- timerInterval = setInterval(() => {
- timeLeft--;
- updateTimer();
- if (timeLeft <= 0) finishQuiz();
- }, 1000);
- nextQuestion();
+   currentIndex = 0;
+   score = 0;
+   wrongList = [];
+   timeLeft = 3000;
+   updateTimer();
+   timerInterval = setInterval(() => {
+     timeLeft--;
+     updateTimer();
+     if (timeLeft <= 0) finishQuiz();
+   }, 1000);
+   nextQuestion();
  }
 
  function updateTimer() {
- const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
- const s = String(timeLeft % 60).padStart(2, '0');
- document.getElementById("timer").textContent = `${m}:${s}`;
+   const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+   const s = String(timeLeft % 60).padStart(2, '0');
+   document.getElementById("timer").textContent = `${m}:${s}`;
  }
 
  function updateProgress() {
- const percent = ((currentIndex) / questions.length) * 100;
- document.getElementById("progressBar").style.width = percent + "%";
+   const percent = ((currentIndex) / questions.length) * 100;
+   document.getElementById("progressBar").style.width = percent + "%";
  }
 
  function nextQuestion() {
- if (currentIndex >= questions.length) {
- finishQuiz();
- return;
- }
- document.getElementById("currentWord").textContent = questions[currentIndex].korea;
- document.getElementById("answerInput").value = "";
- document.getElementById("answerInput").focus();
- updateProgress();
+   if (currentIndex >= questions.length) {
+     finishQuiz();
+     return;
+   }
+   document.getElementById("currentWord").textContent = questions[currentIndex].korea;
+   document.getElementById("answerInput").value = "";
+   document.getElementById("answerInput").focus();
+   updateProgress();
  }
 
  function submitAnswer() {
- const answer = document.getElementById("answerInput").value.trim();
- if (!answer) return;
- checkAnswer(answer);
+   const answer = document.getElementById("answerInput").value.trim();
+   if (!answer) return;
+   checkAnswer(answer);
  }
 
  function checkAnswer(userAnswer) {
- const q = questions[currentIndex];
- const correct = q.indo.toLowerCase().trim();
- const normUser = normalizeAnswer(userAnswer);
- const normCorrect = normalizeAnswer(correct);
- const distance = levenshtein(normUser, normCorrect);
- const isCorrect = (normUser === normCorrect) || (distance <= 2);
- if (!isCorrect) {
- wrongList.push({
- word: questions[currentIndex].korea,
- correct: q.indo,
- your: userAnswer
- });
- } else {
- score++;
- }
- currentIndex++;
- nextQuestion();
+   const q = questions[currentIndex];
+   const normUser = normalizeAnswer(userAnswer);
+   const correctAnswers = getNormalizedCorrectAnswers(q);
+
+   let isCorrect = correctAnswers.some(correct => correct === normUser);
+
+   if (!isCorrect) {
+     for (const correct of correctAnswers) {
+       const distance = levenshtein(normUser, correct);
+       if (distance <= 2) {
+         isCorrect = true;
+         break;
+       }
+     }
+   }
+
+   // Synonym bonus
+   for (const [key, vals] of Object.entries(synonyms)) {
+     const normKey = normalizeAnswer(key);
+     const synonymMatch = normUser === normKey || 
+       vals.some(v => normUser.includes(v.toLowerCase()) || v.toLowerCase().includes(normUser));
+     if (synonymMatch && correctAnswers.some(c => c === normKey)) {
+       isCorrect = true;
+       break;
+     }
+   }
+
+   if (!isCorrect) {
+     wrongList.push({
+       word: q.korea,
+       correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
+       your: userAnswer
+     });
+   } else {
+     score++;
+   }
+
+   currentIndex++;
+   nextQuestion();
  }
 
  function finishQuiz() {
- clearInterval(timerInterval);
- document.getElementById("questionArea").classList.add("hidden");
- document.getElementById("resultArea").classList.remove("hidden");
- const percent = Math.round((score / questions.length) * 100);
- document.getElementById("scoreText").textContent = `Skor: ${score}/${questions.length} (${percent}%)`;
-
- let motivasi = "";
- if (percent > 90) motivasi = "MANTAP SEKALI! Kamu luar biasa!";
- else if (percent >= 80) motivasi = "Bagus sekali! Tetap semangat belajar ya!";
- else if (percent >= 60) motivasi = "Ayo semangat lagi! Kamu pasti bisa lebih baik!";
- else motivasi = "Jangan menyerah ya! Terus latihan, pasti naik kok!";
- const motivasiEl = document.createElement("p");
- motivasiEl.textContent = motivasi;
- motivasiEl.style.fontSize = "24px";
- motivasiEl.style.fontWeight = "bold";
- motivasiEl.style.color = "#d1fae5";
- motivasiEl.style.marginTop = "20px";
- motivasiEl.style.textAlign = "center";
- document.getElementById("resultArea").insertBefore(motivasiEl, document.getElementById("wrongWords"));
-
- const wrongDiv = document.getElementById("wrongWords");
- wrongDiv.innerHTML = "";
- if (wrongList.length > 0) {
- wrongDiv.classList.remove("hidden");
- wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br>";
- wrongList.forEach(item => {
- wrongDiv.innerHTML += `• ${item.word} → ${item.correct} (jawaban kamu: ${item.your})<br>`;
- });
- }
-
- // Google Sheets (ganti kalau perlu)
- const postUrl = "https://docs.google.com/forms/d/e/[GANTI_DENGAN_FORM_ID_KAMU]/formResponse";
- const params = new URLSearchParams();
- params.append("entry.[GANTI1]", username);
- params.append("entry.[GANTI2]", kodeSoal || "Tidak ada");
- params.append("entry.[GANTI3]", `${score}/${questions.length}`);
- params.append("entry.[GANTI4]", "Latihan Kosa Kata");
- params.append("entry.[GANTI5]", `${percent}%`);
- fetch(postUrl, {method: "POST", mode: "no-cors", body: params}).catch(() => {});
-
- // === INTEGRASI ADMIN PUSAT (sync data ke repo admin terpisah) ===
- const resultData = {
-   username: username,
-   kode: kodeSoal || "-",
-   nilai: `${score}/${questions.length} (${percent}%)`,
-   tanggal: new Date().toLocaleString('id-ID'),
-   app: "koka"
- };
- let allResults = JSON.parse(localStorage.getItem("quizResults") || "[]");
- const isDuplicate = allResults.some(r => 
-   r.username === resultData.username &&
-   r.kode === resultData.kode &&
-   r.nilai === resultData.nilai &&
-   r.app === "koka"
- );
- if (!isDuplicate) {
-   allResults.push(resultData);
-   localStorage.setItem("quizResults", JSON.stringify(allResults));
- }
+   clearInterval(timerInterval);
+   document.getElementById("questionArea").classList.add("hidden");
+   document.getElementById("resultArea").classList.remove("hidden");
+   const percent = Math.round((score / questions.length) * 100);
+   document.getElementById("scoreText").textContent = `Skor: ${score}/${questions.length} (${percent}%)`;
+   let motivasi = "";
+   if (percent > 90) motivasi = "MANTAP SEKALI! Kamu luar biasa!";
+   else if (percent >= 80) motivasi = "Bagus sekali! Tetap semangat belajar ya!";
+   else if (percent >= 60) motivasi = "Ayo semangat lagi! Kamu pasti bisa lebih baik!";
+   else motivasi = "Jangan menyerah ya! Terus latihan, pasti naik kok!";
+   const motivasiEl = document.createElement("p");
+   motivasiEl.textContent = motivasi;
+   motivasiEl.style.fontSize = "24px";
+   motivasiEl.style.fontWeight = "bold";
+   motivasiEl.style.color = "#d1fae5";
+   motivasiEl.style.marginTop = "20px";
+   motivasiEl.style.textAlign = "center";
+   document.getElementById("resultArea").insertBefore(motivasiEl, document.getElementById("wrongWords"));
+   const wrongDiv = document.getElementById("wrongWords");
+   wrongDiv.innerHTML = "";
+   if (wrongList.length > 0) {
+     wrongDiv.classList.remove("hidden");
+     wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br>";
+     wrongList.forEach(item => {
+       wrongDiv.innerHTML += `• ${item.word} → ${item.correct} (jawaban kamu: ${item.your})<br>`;
+     });
+   }
+   // Google Sheets
+   const postUrl = "https://docs.google.com/forms/d/e/[GANTI_DENGAN_FORM_ID_KAMU]/formResponse";
+   const params = new URLSearchParams();
+   params.append("entry.[GANTI1]", username);
+   params.append("entry.[GANTI2]", kodeSoal || "Tidak ada");
+   params.append("entry.[GANTI3]", `${score}/${questions.length}`);
+   params.append("entry.[GANTI4]", "Latihan Kosa Kata");
+   params.append("entry.[GANTI5]", `${percent}%`);
+   fetch(postUrl, {method: "POST", mode: "no-cors", body: params}).catch(() => {});
+   // Local storage sync
+   const resultData = {
+     username: username,
+     kode: kodeSoal || "-",
+     nilai: `${score}/${questions.length} (${percent}%)`,
+     tanggal: new Date().toLocaleString('id-ID'),
+     app: "koka"
+   };
+   let allResults = JSON.parse(localStorage.getItem("quizResults") || "[]");
+   const isDuplicate = allResults.some(r =>
+     r.username === resultData.username &&
+     r.kode === resultData.kode &&
+     r.nilai === resultData.nilai &&
+     r.app === "koka"
+   );
+   if (!isDuplicate) {
+     allResults.push(resultData);
+     localStorage.setItem("quizResults", JSON.stringify(allResults));
+   }
  }
 
  function restartQuiz() {
- document.getElementById("resultArea").classList.add("hidden");
- document.getElementById("questionArea").classList.remove("hidden");
- document.getElementById("quizPage").classList.add("hidden");
- document.getElementById("loginPage").classList.remove("hidden");
- document.getElementById("username").value = "";
- document.getElementById("password").value = "";
- document.getElementById("kodeSoal").value = "";
- document.getElementById("errorMsg").textContent = "";
+   document.getElementById("resultArea").classList.add("hidden");
+   document.getElementById("questionArea").classList.remove("hidden");
+   document.getElementById("quizPage").classList.add("hidden");
+   document.getElementById("loginPage").classList.remove("hidden");
+   document.getElementById("username").value = "";
+   document.getElementById("password").value = "";
+   document.getElementById("kodeSoal").value = "";
+   document.getElementById("errorMsg").textContent = "";
  }
  </script>
 </body>
