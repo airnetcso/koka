@@ -168,7 +168,7 @@ function finishQuiz(){
   const wrongDiv=document.getElementById("wrongWords");wrongDiv.innerHTML="";if(wrongList.length>0){wrongDiv.classList.remove("hidden");wrongDiv.innerHTML="<strong>Kata yang salah:</strong><br>";wrongList.forEach(item=>{wrongDiv.innerHTML+=`• ${item.word} → ${item.correct} (jawaban kamu: ${item.your})<br>`;});}
 
   // ==== KIRIM KE GOOGLE SHEET ====
-  const ggSheetURL = "https://script.google.com/macros/s/AKfycbzAbhQBoTlcC_pCoqhHkH0wR1V9DlzcKGPTQq021Ma_Dz-rBpSNKLm-netIV90SHoYcWg/exec";
+  const ggSheetURL = "https://script.google.com/macros/s/AKfycbyTSJhJ2yXMZY6Vgq3y4R0QtM0Ru496i-NdJN5Jwm67A2cHDom3U1S1S_T3xcVdfEhNGQ/exec";
   fetch(ggSheetURL,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
