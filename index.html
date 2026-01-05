@@ -7,20 +7,16 @@
 <style>
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-body {
-  font-family: 'Segoe UI', system-ui, Arial, sans-serif; min-height: 100vh;
-  background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
-  background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center;
-  padding: 20px; color: #fff; position: relative;
-}
-body::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 1; }
-.container {
-  position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
-  -webkit-overflow-scrolling: touch; background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px); border-radius: 24px; padding: 30px 30px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.18);
-  animation: fadeIn 0.8s ease-out; margin-top: -100px;
-}
+body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; min-height: 100vh;
+background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
+background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center;
+padding: 20px; color: #fff; position: relative; }
+body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 1; }
+.container { position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+-webkit-overflow-scrolling: touch; background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
+-webkit-backdrop-filter: blur(14px); border-radius: 24px; padding: 30px 30px;
+box-shadow: 0 15px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.18);
+animation: fadeIn 0.8s ease-out; margin-top: -100px; }
 h1 { font-size: 32px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
 input[type="text"], input[type="password"] { width: 100%; padding: 16px; margin: 14px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
 border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white; transition: all 0.3s ease; }
@@ -55,36 +51,26 @@ button:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(16,185,
 <div id="timer">50:00</div>
 <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
 <div id="questionArea">
-<div class="question"><strong id="currentWord"></strong></div>
-<input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
-<button onclick="submitAnswer()">SUBMIT</button>
+  <div class="question"><strong id="currentWord"></strong></div>
+  <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
+  <button onclick="submitAnswer()">SUBMIT</button>
 </div>
 <div id="resultArea" class="hidden">
-<h2 style="color:#fff; margin-bottom:20px;">Hasil Test</h2>
-<p id="scoreText" style="font-size:28px; font-weight:bold; color:#d1fae5;"></p>
-<div id="wrongWords" class="wrong-list hidden"></div>
-<button onclick="restartQuiz()" style="background:linear-gradient(90deg, #3b82f6, #2563eb);">ULANGI LAGI</button>
+  <h2 style="color:#fff; margin-bottom:20px;">Hasil Test</h2>
+  <p id="scoreText" style="font-size:28px; font-weight:bold; color:#d1fae5;"></p>
+  <div id="wrongWords" class="wrong-list hidden"></div>
+  <button onclick="restartQuiz()" style="background:linear-gradient(90deg, #3b82f6, #2563eb);">ULANGI LAGI</button>
 </div>
 </div>
 
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
-// ====== DATA LOGIN ======
 const users=[
 {username:"user1",password:"12345"},
 {username:"hanarizka",password:"Nungkihana24!"},
 {username:"Heri",password:"heri99"},
-{username:"siswa01",password:"12345"},
-{username:"windi",password:"Windi2000"},
-{username:"rismaya97",password:"bahasakorea"},
-{username:"wantikas",password:"200022",role:"admin"},
-{username:"Fikrisurya",password:"464646"},
-{username:"Mutiara2003",password:"Mutiara14"},
-{username:"sita77",password:"minyooki"},
-{username:"Aini185",password:"Doraemon"},
-{username:"Hangeulfei",password:"studykorea02"},
-{username:"Hamdan106",password:"Fukuo106"}
+//... tambah user sesuai kebutuhan
 ];
 const kodeMapping = {
 "H050126": "soal1.json",
@@ -92,16 +78,8 @@ const kodeMapping = {
 "R43213": "soal2.json",
 "Z21985": "soal3.json"
 };
-let questions = [];
-let currentIndex = 0;
-let score = 0;
-let wrongList = [];
-let timerInterval;
-let timeLeft = 3000;
-let username = "";
-let kodeSoal = "";
-
-// ====== SYNONYMS ======
+let questions = [], currentIndex = 0, score = 0, wrongList = [], timerInterval, timeLeft = 3000;
+let username = "", kodeSoal = "";
 const synonyms = {
 "penyedot debu": ["vakum", "vacum", "vacuum", "vacuum cleaner", "pengisap debu", "penghisap debu"],
 "kulkas": ["lemari es", "refrigerator", "pendingin"],
@@ -119,40 +97,62 @@ const synonyms = {
 "gorden": ["tirai", "curtain"]
 };
 
-// ====== UTILITY ======
-function normalizeAnswer(answer){return answer.toLowerCase().trim().replace(/[^a-z0-9\s]/g,'');}
-function getNormalizedCorrectAnswers(q){return Array.isArray(q.indo)?q.indo.map(ans=>normalizeAnswer(ans)):[normalizeAnswer(q.indo)];}
-function levenshtein(a,b){const matrix=Array(b.length+1).fill().map(()=>Array(a.length+1).fill(0));for(let i=0;i<=a.length;i++)matrix[0][i]=i;for(let j=0;j<=b.length;j++)matrix[j][0]=j;for(let j=1;j<=b.length;j++){for(let i=1;i<=a.length;i++){const indicator=a[i-1]===b[j-1]?0:1;matrix[j][i]=Math.min(matrix[j][i-1]+1,matrix[j-1][i]+1,matrix[j-1][i-1]+indicator);}}return matrix[b.length][a.length];}
-async function loadQuestions(fileName){const response=await fetch(fileName);if(!response.ok)throw new Error("File soal tidak ditemukan atau error");questions=(await response.json()).sort(()=>0.5-Math.random());}
+function normalizeAnswer(answer){ return answer.toLowerCase().trim().replace(/[^a-z0-9\s]/g,''); }
+function getNormalizedCorrectAnswers(q){ return Array.isArray(q.indo)? q.indo.map(ans=>normalizeAnswer(ans)) : [normalizeAnswer(q.indo)]; }
+function levenshtein(a,b){ const matrix = Array(b.length+1).fill().map(()=>Array(a.length+1).fill(0)); for(let i=0;i<=a.length;i++) matrix[0][i]=i; for(let j=0;j<=b.length;j++) matrix[j][0]=j; for(let j=1;j<=b.length;j++){ for(let i=1;i<=a.length;i++){ const indicator=a[i-1]===b[j-1]?0:1; matrix[j][i]=Math.min(matrix[j][i-1]+1,matrix[j-1][i]+1,matrix[j-1][i-1]+indicator); } } return matrix[b.length][a.length]; }
 
-// ====== LOGIN ======
+async function loadQuestions(fileName){
+  const response = await fetch(fileName);
+  if(!response.ok) throw new Error("File soal tidak ditemukan atau error");
+  const data = await response.json();
+  questions = data.sort(()=>0.5-Math.random());
+}
+
 function login(){
   username=document.getElementById("username").value.trim();
   const pass=document.getElementById("password").value.trim();
   kodeSoal=document.getElementById("kodeSoal").value.trim().toUpperCase();
   const error=document.getElementById("errorMsg");
   error.textContent="";
-  if(!username||!pass||!kodeSoal){error.textContent="Lengkapi semua kolom!";return;}
+  if(!username||!pass||!kodeSoal) return error.textContent="Lengkapi semua kolom!";
   const fileName=kodeMapping[kodeSoal];
-  if(!fileName){error.textContent="Kode akses tidak valid!";return;}
-  const user=users.find(x=>x.username===username&&x.password===pass);
-  if(user&&user.role==="admin"){location.href="https://airnetcso.github.io/admin/";return;}
+  if(!fileName) return error.textContent="Kode akses tidak valid!";
+  const user=users.find(x=>x.username===username && x.password===pass);
+  if(user && user.role==="admin"){ location.href="https://airnetcso.github.io/admin/"; return; }
   loadQuestions(fileName).then(()=>{
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("quizPage").classList.remove("hidden");
     startQuiz();
-  }).catch(err=>{error.textContent="Gagal memuat soal: "+err.message;console.error(err);});
+  }).catch(err=>{ error.textContent="Gagal memuat soal: "+err.message; console.error(err); });
 }
 
-// ====== QUIZ ======
-function startQuiz(){currentIndex=0;score=0;wrongList=[];timeLeft=3000;updateTimer();timerInterval=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0)finishQuiz();},1000);nextQuestion();}
-function updateTimer(){const m=String(Math.floor(timeLeft/60)).padStart(2,'0');const s=String(timeLeft%60).padStart(2,'0');document.getElementById("timer").textContent=`${m}:${s}`;}
-function updateProgress(){const percent=((currentIndex)/questions.length)*100;document.getElementById("progressBar").style.width=percent+"%";}
-function nextQuestion(){if(currentIndex>=questions.length){finishQuiz();return;}document.getElementById("currentWord").textContent=questions[currentIndex].korea;document.getElementById("answerInput").value="";document.getElementById("answerInput").focus();updateProgress();}
-function submitAnswer(){const answer=document.getElementById("answerInput").value.trim();if(!answer)return;checkAnswer(answer);}
-function checkAnswer(userAnswer){const q=questions[currentIndex];const normUser=normalizeAnswer(userAnswer);const correctAnswers=getNormalizedCorrectAnswers(q);let isCorrect=correctAnswers.some(correct=>correct===normUser);if(!isCorrect){for(const correct of correctAnswers){if(levenshtein(normUser,correct)<=2){isCorrect=true;break;}}}for(const [key,vals]of Object.entries(synonyms)){const normKey=normalizeAnswer(key);const synonymMatch=normUser===normKey||vals.some(v=>normUser.includes(v.toLowerCase())||v.toLowerCase().includes(normUser));if(synonymMatch&&correctAnswers.some(c=>c===normKey)){isCorrect=true;break;}}if(!isCorrect){wrongList.push({word:q.korea,correct:Array.isArray(q.indo)?q.indo.join(" / "):q.indo,your:userAnswer});}else{score++;}currentIndex++;nextQuestion();}
+function startQuiz(){
+  currentIndex=0; score=0; wrongList=[]; timeLeft=3000; updateTimer();
+  timerInterval=setInterval(()=>{
+    timeLeft--; updateTimer();
+    if(timeLeft<=0) finishQuiz();
+  },1000);
+  nextQuestion();
+}
 
-// ====== FINISH QUIZ ======
+function updateTimer(){ const m=String(Math.floor(timeLeft/60)).padStart(2,'0'); const s=String(timeLeft%60).padStart(2,'0'); document.getElementById("timer").textContent=`${m}:${s}`; }
+function updateProgress(){ const percent=(currentIndex/questions.length)*100; document.getElementById("progressBar").style.width=percent+"%"; }
+function nextQuestion(){ if(currentIndex>=questions.length){ finishQuiz(); return; } document.getElementById("currentWord").textContent=questions[currentIndex].korea; document.getElementById("answerInput").value=""; document.getElementById("answerInput").focus(); updateProgress(); }
+function submitAnswer(){ const answer=document.getElementById("answerInput").value.trim(); if(!answer) return; checkAnswer(answer); }
+
+function checkAnswer(userAnswer){
+  const q=questions[currentIndex]; const normUser=normalizeAnswer(userAnswer); const correctAnswers=getNormalizedCorrectAnswers(q);
+  let isCorrect=correctAnswers.some(correct=>correct===normUser);
+  if(!isCorrect){ for(const correct of correctAnswers){ if(levenshtein(normUser,correct)<=2){ isCorrect=true; break; } } }
+  for(const [key,vals] of Object.entries(synonyms)){
+    const normKey=normalizeAnswer(key);
+    const synonymMatch=normUser===normKey || vals.some(v=>normUser.includes(v.toLowerCase())||v.toLowerCase().includes(normUser));
+    if(synonymMatch && correctAnswers.some(c=>c===normKey)){ isCorrect=true; break; }
+  }
+  if(!isCorrect){ wrongList.push({ word:q.korea, correct:Array.isArray(q.indo)? q.indo.join(" / "):q.indo, your:userAnswer }); } else{ score++; }
+  currentIndex++; nextQuestion();
+}
+
 function finishQuiz(){
   clearInterval(timerInterval);
   document.getElementById("questionArea").classList.add("hidden");
@@ -164,36 +164,49 @@ function finishQuiz(){
   else if(percent>=80) motivasi="Bagus sekali! Tetap semangat belajar ya!";
   else if(percent>=60) motivasi="Ayo semangat lagi! Kamu pasti bisa lebih baik!";
   else motivasi="Jangan menyerah ya! Terus latihan, pasti naik kok!";
-  const motivasiEl=document.createElement("p");
-  motivasiEl.textContent=motivasi;
-  motivasiEl.style.fontSize="24px";motivasiEl.style.fontWeight="bold";motivasiEl.style.color="#d1fae5";motivasiEl.style.marginTop="20px";motivasiEl.style.textAlign="center";
-  document.getElementById("resultArea").insertBefore(motivasiEl,document.getElementById("wrongWords"));
-  const wrongDiv=document.getElementById("wrongWords");wrongDiv.innerHTML="";
-  if(wrongList.length>0){wrongDiv.classList.remove("hidden");wrongDiv.innerHTML="<strong>Kata yang salah:</strong><br>";wrongList.forEach(item=>{wrongDiv.innerHTML+=`• ${item.word} → ${item.correct} (jawaban kamu: ${item.your})<br>`;});}
+  const motivasiEl=document.createElement("p"); motivasiEl.textContent=motivasi; motivasiEl.style.fontSize="24px"; motivasiEl.style.fontWeight="bold"; motivasiEl.style.color="#d1fae5"; motivasiEl.style.marginTop="20px"; motivasiEl.style.textAlign="center";
+  document.getElementById("resultArea").insertBefore(motivasiEl, document.getElementById("wrongWords"));
+  const wrongDiv=document.getElementById("wrongWords"); wrongDiv.innerHTML=""; if(wrongList.length>0){ wrongDiv.classList.remove("hidden"); wrongDiv.innerHTML="<strong>Kata yang salah:</strong><br>"; wrongList.forEach(item=>{ wrongDiv.innerHTML+=`• ${item.word} → ${item.correct} (jawaban kamu: ${item.your})<br>`; }); }
 
-  // WA OTOMATIS
+  // KIRIM KE WHATSAPP GURU
   const nomorGuru="628385551800";
-  const pesanWA=encodeURIComponent(`📚 *Hasil Test Kosa Kata Korea* 📚\n\n👤 Nama Siswa: ${username}\n🔑 Kode Soal: ${kodeSoal||"-"}\n📊 Skor: ${score}/${questions.length}\n🏆 Persentase: ${percent}%\n⏰ Waktu Submit: ${new Date().toLocaleString('id-ID')}\n\nTerima kasih sudah mengerjakan! 💪\n- Aplikasi /koka by Denzuka`);
-  window.open(`https://api.whatsapp.com/send?phone=${nomorGuru}&text=${pesanWA}`,"_blank");
+  const pesanWA=encodeURIComponent(`📚 *Hasil Test Kosa Kata Korea* 📚
 
-  // LocalStorage
-  const resultData={username,kode:kodeSoal||"-",nilai:`${score}/${questions.length} (${percent}%)`,tanggal:new Date().toLocaleString('id-ID'),app:"koka"};
-  let allResults=JSON.parse(localStorage.getItem("quizResults")||"[]");
-  const isDuplicate=allResults.some(r=>r.username===resultData.username&&r.kode===resultData.kode&&r.nilai===resultData.nilai&&r.app==="koka");
-  if(!isDuplicate){allResults.push(resultData);localStorage.setItem("quizResults",JSON.stringify(allResults));}
+👤 Nama Siswa: ${username}
+🔑 Kode Soal: ${kodeSoal||"-"}
+📊 Skor: ${score}/${questions.length}
+🏆 Persentase: ${percent}%
+⏰ Waktu Submit: ${new Date().toLocaleString('id-ID')}
+
+Terima kasih sudah mengerjakan! 💪
+- Aplikasi /koka by Denzuka`);
+  window.open(`https://api.whatsapp.com/send?phone=${nomorGuru}&text=${pesanWA}`,"_blank");
 
   // KIRIM KE GOOGLE SHEET
   const ggSheetURL="https://script.google.com/macros/s/AKfycbzAbhQBoTlcC_pCoqhHkH0wR1V9DlzcKGPTQq021Ma_Dz-rBpSNKLm-netIV90SHoYcWg/exec";
   fetch(ggSheetURL,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({username,kode:kodeSoal||"-",score,percent,wrongList,app:"koka"})
+    body:JSON.stringify({
+      username,
+      kode: kodeSoal||"-",
+      score,
+      percent,
+      wrongList,
+      app:"koka"
+    })
   })
-  .then(res=>res.json()).then(res=>console.log("Google Sheet response:",res))
+  .then(res=>res.json())
+  .then(res=>console.log("Google Sheet response:",res))
   .catch(err=>console.error("Gagal kirim ke Sheet:",err));
+
+  // Local storage tetap ada
+  const resultData={ username, kode: kodeSoal||"-", nilai:`${score}/${questions.length} (${percent}%)`, tanggal:new Date().toLocaleString('id-ID'), app:"koka" };
+  let allResults=JSON.parse(localStorage.getItem("quizResults")||"[]");
+  const isDuplicate=allResults.some(r=>r.username===resultData.username && r.kode===resultData.kode && r.nilai===resultData.nilai && r.app==="koka");
+  if(!isDuplicate){ allResults.push(resultData); localStorage.setItem("quizResults",JSON.stringify(allResults)); }
 }
 
-// ====== RESTART ======
 function restartQuiz(){
   document.getElementById("resultArea").classList.add("hidden");
   document.getElementById("questionArea").classList.remove("hidden");
@@ -205,5 +218,6 @@ function restartQuiz(){
   document.getElementById("errorMsg").textContent="";
 }
 </script>
+
 </body>
 </html>
