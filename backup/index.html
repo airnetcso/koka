@@ -6,6 +6,9 @@
 <title>TEST KOSA KATA</title>
 <style>
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulseCorrect { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes pulseWrong { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 body {
   font-family: 'Segoe UI', system-ui, Arial, sans-serif;
@@ -15,38 +18,55 @@ body {
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   padding: 20px; color: #fff; position: relative;
 }
-body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 1; }
+body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 1; }
 .container {
-  position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
-  -webkit-overflow-scrolling: touch; background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px); border-radius: 24px; padding: 30px 30px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.18);
-  animation: fadeIn 0.8s ease-out; margin-top: -100px;
+  position: relative; z-index: 2; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(16px); border-radius: 24px;
+  padding: 32px; box-shadow: 0 15px 50px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2);
+  animation: fadeIn 0.9s ease-out;
 }
-h1 { font-size: 32px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+h1 { font-size: 34px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
 input[type="text"], input[type="password"] {
-  width: 100%; padding: 16px; margin: 14px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
-  border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white; transition: all 0.3s ease;
+  width: 100%; padding: 16px; margin: 12px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white;
+  transition: all 0.3s ease;
 }
 input::placeholder { color: rgba(255,255,255,0.7); }
-input:focus { border-color: #fff; background: rgba(255,255,255,0.22); outline: none; box-shadow: 0 0 0 4px rgba(255,255,255,0.15); }
+input:focus { border-color: #fff; background: rgba(255,255,255,0.25); outline: none; box-shadow: 0 0 0 5px rgba(255,255,255,0.2); }
 button {
-  width: 100%; padding: 16px; margin: 16px 0 8px; font-size: 20px; font-weight: bold; border: none;
-  border-radius: 12px; color: white; cursor: pointer; background: linear-gradient(90deg, #10b981, #059669); transition: all 0.3s ease;
+  width: 100%; padding: 16px; margin: 18px 0 8px; font-size: 20px; font-weight: bold; border: none;
+  border-radius: 12px; color: white; cursor: pointer; background: linear-gradient(90deg, #10b981, #059669);
+  transition: all 0.3s ease;
 }
-button:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(16,185,129,0.4); }
-.error { color: #ff6b6b; text-align: center; margin: 12px 0; font-weight: 600; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; }
+button:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(16,185,129,0.45); }
+button:active { transform: translateY(-1px); }
+
+.error { color: #ff6b6b; text-align: center; margin: 12px 0; font-weight: 600; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; }
 .hidden { display: none !important; }
-#timer { text-align: center; font-size: 28px; color: #fee2e2; font-weight: bold; margin: 20px 0; background: rgba(220,38,38,0.25); padding: 12px; border-radius: 12px; }
-.progress { height: 12px; background: rgba(255,255,255,0.15); border-radius: 6px; margin: 20px 0; overflow: hidden; }
-.progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #059669); width: 0%; transition: width 0.6s ease; }
-.question strong { font-size: 42px; display: block; margin: 40px 0 25px; color: #fff; text-align: center; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-.wrong-list { font-size: 17px; line-height: 1.8; margin: 25px 0; background: rgba(254,243,199,0.9); color: #92400e; padding: 20px; border-radius: 12px; border-left: 5px solid #ca8a04; }
-.footer { position: relative; z-index: 2; margin-top: 40px; font-size: 14px; color: rgba(255,255,255,0.85); text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+
+#timer { text-align: center; font-size: 32px; font-weight: bold; margin: 20px 0; padding: 14px; border-radius: 14px;
+  background: rgba(220,38,38,0.25); transition: all 0.5s; }
+#timer.warning { background: rgba(252,211,77,0.4); color: #fef3c7; animation: pulseWrong 1s infinite alternate; }
+
+.progress { height: 14px; background: rgba(255,255,255,0.15); border-radius: 7px; margin: 20px 0; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #059669); width: 0%; transition: width 0.8s ease; }
+
+#questionNumber { text-align: center; font-size: 20px; margin: 10px 0; color: #e0f2fe; }
+
+.question strong { font-size: 48px; display: block; margin: 40px 0 30px; color: #fff; text-align: center;
+  font-weight: 700; text-shadow: 0 3px 12px rgba(0,0,0,0.6); }
+
+#feedback { text-align: center; font-size: 28px; font-weight: bold; margin: 20px 0; height: 40px; animation: fadeIn 0.5s; }
+.correct { color: #86efac; animation: pulseCorrect 0.6s; }
+.wrong { color: #fca5a5; animation: pulseWrong 0.6s; }
+
+.wrong-list { font-size: 17px; line-height: 1.9; margin: 25px 0; background: rgba(254,243,199,0.95); color: #92400e;
+  padding: 22px; border-radius: 14px; border-left: 6px solid #ca8a04; }
+
+.footer { position: relative; z-index: 2; margin-top: 50px; font-size: 14px; color: rgba(255,255,255,0.85); text-align: center; }
 </style>
 </head>
 <body>
-
 <div class="container" id="loginPage">
   <h1>TEST KOSA KATA</h1>
   <input type="text" id="username" placeholder="Username / 이름" autocomplete="off">
@@ -59,17 +79,26 @@ button:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(16,185,
 <div class="container hidden" id="quizPage">
   <h1>TEST KOSA KATA</h1>
   <div id="timer">50:00</div>
+  <div id="questionNumber">Soal 1 dari 50</div>
   <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  
   <div id="questionArea">
+    <div id="feedback"></div>
     <div class="question"><strong id="currentWord"></strong></div>
     <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
-    <button onclick="submitAnswer()">SUBMIT</button>
+    <button onclick="submitAnswer()" id="submitBtn">SUBMIT</button>
   </div>
+
   <div id="resultArea" class="hidden">
-    <h2 style="color:#fff; margin-bottom:20px;">Hasil Test</h2>
-    <p id="scoreText" style="font-size:28px; font-weight:bold; color:#d1fae5;"></p>
+    <h2 style="color:#fff; margin-bottom:20px; text-align:center;">Hasil Test</h2>
+    <p id="scoreText" style="font-size:32px; font-weight:bold; color:#d1fae5; text-align:center;"></p>
     <div id="wrongWords" class="wrong-list hidden"></div>
-    <button onclick="restartQuiz()" style="background:linear-gradient(90deg, #3b82f6, #2563eb);">ULANGI LAGI</button>
+    <button onclick="restartQuiz()" style="background:linear-gradient(90deg, #3b82f6, #2563eb); margin-top:20px;">
+      ULANGI LAGI
+    </button>
+    <button onclick="backToLogin()" style="background:linear-gradient(90deg, #6b7280, #4b5563); margin-top:10px;">
+      KEMBALI KE LOGIN
+    </button>
   </div>
 </div>
 
@@ -101,92 +130,137 @@ const kodeMapping = {
   "Z21985": "soal3.json"
 };
 
-let questions=[], currentIndex=0, score=0, wrongList=[], timerInterval, timeLeft=3000;
-let username="", kodeSoal="";
+let questions = [], currentIndex = 0, score = 0, wrongList = [], timerInterval, timeLeft = 3000;
+let username = "", kodeSoal = "";
 
-function login(){
-  username=document.getElementById("username").value.trim();
-  const pass=document.getElementById("password").value.trim();
-  kodeSoal=document.getElementById("kodeSoal").value.trim().toUpperCase();
-  const error=document.getElementById("errorMsg");
-  error.textContent="";
-  if(!username||!pass||!kodeSoal){error.textContent="Lengkapi semua kolom!";return;}
-  const fileName=kodeMapping[kodeSoal];
-  if(!fileName){error.textContent="Kode akses tidak valid!";return;}
-  const user=users.find(u=>u.username===username&&u.password===pass);
-  if(!user){error.textContent="Username / Password salah!";return;}
-  if(user.role==="admin"){location.href="https://airnetcso.github.io/admin/";return;}
-  loadQuestions(fileName).then(()=>{
+function login() {
+  username = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value.trim();
+  kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
+  const error = document.getElementById("errorMsg");
+  error.textContent = "";
+
+  if (!username || !pass || !kodeSoal) { error.textContent = "Lengkapi semua kolom!"; return; }
+
+  const fileName = kodeMapping[kodeSoal];
+  if (!fileName) { error.textContent = "Kode akses tidak valid!"; return; }
+
+  const user = users.find(u => u.username === username && u.password === pass);
+  if (!user) { error.textContent = "Username / Password salah!"; return; }
+  if (user.role === "admin") { location.href = "https://airnetcso.github.io/admin/"; return; }
+
+  loadQuestions(fileName).then(() => {
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("quizPage").classList.remove("hidden");
     startQuiz();
-  }).catch(err=>{
-    error.textContent="Gagal memuat soal: "+err.message;
+  }).catch(err => {
+    error.textContent = "Gagal memuat soal: " + err.message;
     console.error(err);
   });
 }
 
-async function loadQuestions(fileName){
-  const res=await fetch(fileName);
-  if(!res.ok) throw new Error("File soal tidak ditemukan");
-  const data=await res.json();
-  questions=data.sort(()=>0.5-Math.random());
+async function loadQuestions(fileName) {
+  const res = await fetch(fileName);
+  if (!res.ok) throw new Error("File soal tidak ditemukan atau error jaringan");
+  const data = await res.json();
+  questions = data.sort(() => 0.5 - Math.random());
 }
 
-function startQuiz(){
-  currentIndex=0; score=0; wrongList=[]; timeLeft=3000; updateTimer();
-  timerInterval=setInterval(()=>{timeLeft--; updateTimer(); if(timeLeft<=0) finishQuiz();},1000);
+function startQuiz() {
+  currentIndex = 0; score = 0; wrongList = []; timeLeft = 3000;
+  updateTimer(); updateQuestionNumber(); updateProgress();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) finishQuiz();
+  }, 1000);
   nextQuestion();
 }
 
-function updateTimer(){
-  const m=String(Math.floor(timeLeft/60)).padStart(2,"0");
-  const s=String(timeLeft%60).padStart(2,"0");
-  document.getElementById("timer").textContent=`${m}:${s}`;
+function updateTimer() {
+  const m = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const s = String(timeLeft % 60).padStart(2, "0");
+  const timerEl = document.getElementById("timer");
+  timerEl.textContent = `${m}:${s}`;
+  if (timeLeft <= 300) {
+    timerEl.classList.add("warning");
+  } else {
+    timerEl.classList.remove("warning");
+  }
 }
 
-function updateProgress(){
-  const percent=((currentIndex)/questions.length)*100;
-  document.getElementById("progressBar").style.width=percent+"%";
+function updateQuestionNumber() {
+  document.getElementById("questionNumber").textContent = `Soal ${currentIndex + 1} dari ${questions.length}`;
 }
 
-function nextQuestion(){
-  if(currentIndex>=questions.length){finishQuiz(); return;}
-  document.getElementById("currentWord").textContent=questions[currentIndex].korea;
-  document.getElementById("answerInput").value="";
+function updateProgress() {
+  const percent = ((currentIndex) / questions.length) * 100;
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function nextQuestion() {
+  if (currentIndex >= questions.length) { finishQuiz(); return; }
+  
+  document.getElementById("currentWord").textContent = questions[currentIndex].korea;
+  document.getElementById("answerInput").value = "";
   document.getElementById("answerInput").focus();
+  document.getElementById("feedback").textContent = "";
+  updateQuestionNumber();
   updateProgress();
 }
 
-function submitAnswer(){
-  const answer=document.getElementById("answerInput").value.trim();
-  if(!answer) return;
-  checkAnswer(answer);
+function submitAnswer() {
+  const answer = document.getElementById("answerInput").value.trim();
+  if (!answer) return;
+  
+  const feedback = document.getElementById("feedback");
+  const q = questions[currentIndex];
+  
+  const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+  let correctAnswers = Array.isArray(q.indo)
+    ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
+    : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
+
+  let isCorrect = correctAnswers.includes(normUser);
+  if (!isCorrect) {
+    isCorrect = correctAnswers.some(c => levenshtein(normUser, c) <= 2);
+  }
+
+  if (isCorrect) {
+    score++;
+    feedback.textContent = "Benar!";
+    feedback.className = "correct";
+  } else {
+    wrongList.push({
+      word: q.korea,
+      correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
+      your: answer
+    });
+    feedback.textContent = "Salah!";
+    feedback.className = "wrong";
+  }
+
+  setTimeout(() => {
+    currentIndex++;
+    nextQuestion();
+  }, 800);
 }
 
-function checkAnswer(userAnswer){
-  const q=questions[currentIndex];
-  const normUser=userAnswer.toLowerCase().trim().replace(/[^a-z0-9\s]/g,'');
-  const correctAnswers=Array.isArray(q.indo)?q.indo.map(ans=>ans.toLowerCase().trim()):[q.indo.toLowerCase().trim()];
-  let isCorrect=correctAnswers.includes(normUser);
-  if(!isCorrect){correctAnswers.forEach(c=>{if(levenshtein(normUser,c)<=2) isCorrect=true;});}
-  if(!isCorrect){wrongList.push({word:q.korea,correct:Array.isArray(q.indo)?q.indo.join(" / "):q.indo,your:userAnswer});} else {score++;}
-  currentIndex++; nextQuestion();
-}
-
-function finishQuiz(){
+function finishQuiz() {
   clearInterval(timerInterval);
   document.getElementById("questionArea").classList.add("hidden");
   document.getElementById("resultArea").classList.remove("hidden");
-  const percent=Math.round((score/questions.length)*100);
-  document.getElementById("scoreText").textContent=`Skor: ${score}/${questions.length} (${percent}%)`;
-  const wrongDiv=document.getElementById("wrongWords");
-  wrongDiv.innerHTML="";
-  if(wrongList.length>0){
+
+  const percent = Math.round((score / questions.length) * 100);
+  document.getElementById("scoreText").textContent = `Skor: ${score}/${questions.length} (${percent}%)`;
+
+  const wrongDiv = document.getElementById("wrongWords");
+  wrongDiv.innerHTML = "";
+  if (wrongList.length > 0) {
     wrongDiv.classList.remove("hidden");
-    wrongDiv.innerHTML="<strong>Kata yang salah:</strong><br>";
-    wrongList.forEach(i=>{
-      wrongDiv.innerHTML+=`• ${i.word} → ${i.correct} (jawaban kamu: ${i.your})<br>`;
+    wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br><br>";
+    wrongList.forEach(i => {
+      wrongDiv.innerHTML += `• <strong>${i.word}</strong> → ${i.correct} <br><small style="color:#78350f;">(jawaban kamu: ${i.your})</small><br><br>`;
     });
   }
 
@@ -202,35 +276,45 @@ function finishQuiz(){
       persentase: percent,
       catatan: wrongList.length ? JSON.stringify(wrongList) : ""
     })
-  })
-  .then(res => res.json())
-  .then(data => console.log("Hasil terkirim ke Google Sheet:", data))
-  .catch(err => console.error("Gagal kirim ke Google Sheet:", err));
+  }).catch(err => console.error("Gagal kirim data:", err));
 }
 
-function restartQuiz(){
+function restartQuiz() {
   document.getElementById("resultArea").classList.add("hidden");
   document.getElementById("questionArea").classList.remove("hidden");
-  document.getElementById("quizPage").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
-  document.getElementById("username").value="";
-  document.getElementById("password").value="";
-  document.getElementById("kodeSoal").value="";
-  document.getElementById("errorMsg").textContent="";
+  startQuiz();
 }
 
-function levenshtein(a,b){
-  const matrix=Array(b.length+1).fill().map(()=>Array(a.length+1).fill(0));
-  for(let i=0;i<=a.length;i++)matrix[0][i]=i;
-  for(let j=0;j<=b.length;j++)matrix[j][0]=j;
-  for(let j=1;j<=b.length;j++){
-    for(let i=1;i<=a.length;i++){
-      const indicator=a[i-1]===b[j-1]?0:1;
-      matrix[j][i]=Math.min(matrix[j][i-1]+1,matrix[j-1][i]+1,matrix[j-1][i-1]+indicator);
+function backToLogin() {
+  document.getElementById("quizPage").classList.add("hidden");
+  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+  document.getElementById("kodeSoal").value = "";
+  document.getElementById("errorMsg").textContent = "";
+}
+
+function levenshtein(a, b) {
+  const matrix = Array(b.length + 1).fill().map(() => Array(a.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+  for (let j = 1; j <= b.length; j++) {
+    for (let i = 1; i <= a.length; i++) {
+      const indicator = a[i-1] === b[j-1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i-1] + 1,
+        matrix[j-1][i] + 1,
+        matrix[j-1][i-1] + indicator
+      );
     }
   }
   return matrix[b.length][a.length];
 }
+
+// Enter key submit
+document.getElementById("answerInput")?.addEventListener("keypress", e => {
+  if (e.key === "Enter") submitAnswer();
+});
 </script>
 </body>
 </html>
