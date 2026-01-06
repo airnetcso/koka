@@ -244,6 +244,22 @@ function finishQuiz() {
     });
   }
 
+  // Cara baru: Kirim data via redirect GET (100% bypass CORS)
+  const params = new URLSearchParams({
+    username: username,
+    kodeSoal: kodeSoal,
+    jenisAplikasi: "QUIZ",
+    skor: score,
+    persentase: percent,
+    catatan: wrongList.length ? JSON.stringify(wrongList) : ""
+  });
+
+  // Buka tab baru ke script (data masuk otomatis)
+  window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
+
+  console.log("Data dikirim via GET - cek sheet sekarang!");
+}
+
   // FIX CORS: Pakai text/plain + no-cors biar data masuk tanpa error
   fetch(SPREADSHEET_URL, {
     method: "POST",
