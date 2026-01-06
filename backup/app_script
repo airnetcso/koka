@@ -1,0 +1,54 @@
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  try {
+    const SPREADSHEET_ID = "10rNccs5OzCfGa7Ohig0N2yQaG0LWYwY_-AJD_dMdg28";
+    const SHEET_NAME = "DATA";
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+
+    let data = {};
+
+    if (e.parameter) {
+      // Prioritas GET dari quiz
+      data = {
+        username: e.parameter.username || "",
+        kodeSoal: e.parameter.kodeSoal || "",
+        jenisAplikasi: e.parameter.jenisAplikasi || "",
+        skor: Number(e.parameter.skor) || 0,
+        persentase: Number(e.parameter.persentase) || 0,
+        catatan: decodeURIComponent(e.parameter.catatan || "")
+      };
+    } else if (e.postData && e.postData.contents) {
+      // Kalau POST
+      data = JSON.parse(e.postData.contents);
+    }
+
+    // Append baris baru
+    sheet.appendRow([
+      new Date(),
+      data.username,
+      data.kodeSoal,
+      data.jenisAplikasi,
+      data.skor,
+      data.persentase,
+      data.catatan
+    ]);
+
+    // Return OK aja biar tab baru ga nunjukin data lama
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "OK", message: "Data berhasil disimpan!" }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "ERROR", message: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
