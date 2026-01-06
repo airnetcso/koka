@@ -4,181 +4,177 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TEST KOSA KATA</title>
-
 <style>
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 body {
-  font-family: 'Segoe UI', system-ui, Arial, sans-serif;
-  min-height: 100vh;
-  background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
-  background-size: cover;
-  display: flex; flex-direction: column; justify-content: center; align-items: center;
-  padding: 20px; color: #fff; position: relative;
+font-family: 'Segoe UI', system-ui, Arial, sans-serif; min-height: 100vh;
+background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
+background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center;
+padding: 20px; color: #fff; position: relative;
 }
-body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); z-index: 1; }
+body::before { content: ''; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 1; }
 .container {
-  position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
-  background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
-  border-radius: 24px; padding: 30px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.35);
-  animation: fadeIn 0.8s ease-out; margin-top: -100px;
+position: relative; z-index: 2; width: 80%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+background: rgba(255,255,255,0.15); backdrop-filter: blur(14px);
+border-radius: 24px; padding: 30px;
+box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+animation: fadeIn 0.8s ease-out; margin-top: -100px;
 }
 h1 { text-align:center; margin-bottom:30px; }
-input, button { width:100%; padding:16px; margin:14px 0; font-size:18px; border-radius:12px; }
-input { background:rgba(255,255,255,.12); border:2px solid rgba(255,255,255,.4); color:#fff; }
-button { border:none; font-weight:bold; cursor:pointer; background:linear-gradient(90deg,#10b981,#059669); color:#fff; }
-.hidden { display:none !important; }
+input, button {
+width:100%; padding:16px; margin:12px 0; font-size:18px;
+border-radius:12px; border:none;
+}
+button { background:#10b981; color:#fff; font-weight:bold; cursor:pointer; }
+.hidden { display:none; }
 #errorMsg { color:#ff6b6b; text-align:center; }
 #timer { text-align:center; font-size:28px; margin:20px 0; }
-.progress { height:12px; background:rgba(255,255,255,.2); border-radius:6px; }
-.progress-bar { height:100%; width:0%; background:#10b981; }
-.question strong { font-size:42px; display:block; margin:40px 0 25px; text-align:center; }
-.wrong-list { background:#fef3c7; color:#92400e; padding:20px; border-radius:12px; }
-.footer { margin-top:40px; font-size:14px; z-index:2; }
+.progress { height:12px; background:#ffffff33; border-radius:6px; overflow:hidden; }
+.progress-bar { height:100%; background:#10b981; width:0%; }
+.question strong { font-size:42px; display:block; text-align:center; margin:30px 0; }
+.wrong-list { background:#fff3cd; color:#92400e; padding:15px; border-radius:10px; }
+.footer { margin-top:30px; font-size:14px; }
 </style>
 </head>
 
 <body>
 
 <div class="container" id="loginPage">
-  <h1>TEST KOSA KATA</h1>
-  <input id="username" placeholder="Username / 이름">
-  <input id="password" type="password" placeholder="Password / 비밀번호">
-  <input id="kodeSoal" placeholder="Kode Test / 시험코드">
-  <div id="errorMsg"></div>
-  <button onclick="login()">MULAI / 시작</button>
+<h1>TEST KOSA KATA</h1>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<input id="kodeSoal" placeholder="Kode Soal">
+<div id="errorMsg"></div>
+<button onclick="login()">MULAI</button>
 </div>
 
 <div class="container hidden" id="quizPage">
-  <h1>TEST KOSA KATA</h1>
-  <div id="timer">50:00</div>
-  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-
-  <div id="questionArea">
-    <div class="question"><strong id="currentWord"></strong></div>
-    <input id="answerInput" placeholder="Ketik jawaban di sini">
-    <button onclick="submitAnswer()">SUBMIT</button>
-  </div>
-
-  <div id="resultArea" class="hidden">
-    <p id="scoreText"></p>
-    <div id="wrongWords" class="wrong-list hidden"></div>
-    <button onclick="restartQuiz()">ULANGI LAGI</button>
-  </div>
+<h1>TEST KOSA KATA</h1>
+<div id="timer">50:00</div>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div id="questionArea">
+<div class="question"><strong id="currentWord"></strong></div>
+<input id="answerInput" placeholder="Ketik jawaban">
+<button onclick="submitAnswer()">SUBMIT</button>
+</div>
+<div id="resultArea" class="hidden">
+<p id="scoreText"></p>
+<div id="wrongWords" class="wrong-list hidden"></div>
+<button onclick="restartQuiz()">ULANGI</button>
+</div>
 </div>
 
-<div class="footer">© 2026 Denzuka - Kim Jongun</div>
+<div class="footer">© 2026 Denzuka</div>
 
 <script>
-/* ===== USER TIDAK DIUBAH ===== */
+/* ================= DATA ASLI ================= */
 const users=[
- {username:"user1",password:"12345"},
- {username:"hanarizka",password:"Nungkihana24!"},
- {username:"Heri",password:"heri99"},
- {username:"siswa01",password:"12345"},
- {username:"windi",password:"Windi2000"},
- {username:"rismaya97",password:"bahasakorea"},
- {username:"wantikas",password:"200022",role:"admin"},
- {username:"Fikrisurya",password:"464646"},
- {username:"Mutiara2003",password:"Mutiara14"},
- {username:"sita77",password:"minyooki"},
- {username:"Aini185",password:"Doraemon"},
- {username:"Hangeulfei",password:"studykorea02"},
- {username:"Hamdan106",password:"Fukuo106"}
+{username:"user1",password:"12345"},
+{username:"hanarizka",password:"Nungkihana24!"},
+{username:"Heri",password:"heri99"},
+{username:"siswa01",password:"12345"},
+{username:"windi",password:"Windi2000"},
+{username:"rismaya97",password:"bahasakorea"},
+{username:"wantikas",password:"200022",role:"admin"},
+{username:"Fikrisurya",password:"464646"},
+{username:"Mutiara2003",password:"Mutiara14"},
+{username:"sita77",password:"minyooki"},
+{username:"Aini185",password:"Doraemon"},
+{username:"Hangeulfei",password:"studykorea02"},
+{username:"Hamdan106",password:"Fukuo106"}
 ];
 
 const kodeMapping={
- "H050126":"soal1.json",
- "SAREWAE":"test.json",
- "R43213":"soal2.json",
- "Z21985":"soal3.json"
+"H050126":"soal1.json",
+"SAREWAE":"test.json",
+"R43213":"soal2.json",
+"Z21985":"soal3.json"
 };
 
-/* ===== GOOGLE SHEET (TAMBAHAN SAJA) ===== */
-const GOOGLE_SHEET_URL="https://script.google.com/macros/s/AKfycbzXCl1rF-RKZGQ83W_lhIU_X-Zd95hboU8hxdHQZQRHKoEo6KMIG6Iio9ypAelsJsJD5Q/exec";
-
-/* ===== LOGIC ASLI ===== */
-let questions=[],currentIndex=0,score=0,wrongList=[],timerInterval,timeLeft=3000;
+let questions=[],currentIndex=0,score=0,wrongList=[],timer,timeLeft=3000;
 let username="",kodeSoal="";
 
-async function loadQuestions(file){
- const r=await fetch(file);
- questions=(await r.json()).sort(()=>0.5-Math.random());
+/* ================= GOOGLE SHEET ================= */
+const GS_URL="https://script.google.com/macros/s/AKfycbzXCl1rF-RKZGQ83W_lhIU_X-Zd95hboU8hxdHQZQRHKoEo6KMIG6Iio9ypAelsJsJD5Q/exec";
+
+/* ================= LOGIC ================= */
+async function loadQuestions(f){
+const r=await fetch(f); questions=await r.json();
+questions.sort(()=>0.5-Math.random());
 }
 
 function login(){
- username=username=document.getElementById("username").value.trim();
- const pass=document.getElementById("password").value.trim();
- kodeSoal=document.getElementById("kodeSoal").value.trim().toUpperCase();
- if(!username||!pass||!kodeSoal) return errorMsg.textContent="Lengkapi semua kolom!";
- const file=kodeMapping[kodeSoal];
- if(!file) return errorMsg.textContent="Kode akses tidak valid!";
- const u=users.find(x=>x.username===username&&x.password===pass);
- if(u&&u.role==="admin") return location.href="https://airnetcso.github.io/admin/";
- loadQuestions(file).then(()=>{
-   loginPage.classList.add("hidden");
-   quizPage.classList.remove("hidden");
-   startQuiz();
- });
+username=usernameEl.value=usernameEl.value||document.getElementById("username").value.trim();
+const pass=document.getElementById("password").value.trim();
+kodeSoal=document.getElementById("kodeSoal").value.trim().toUpperCase();
+if(!username||!pass||!kodeSoal)return errorMsg.textContent="Lengkapi semua!";
+const file=kodeMapping[kodeSoal];
+const u=users.find(x=>x.username===username&&x.password===pass);
+if(u?.role==="admin")return location.href="https://airnetcso.github.io/admin/";
+loadQuestions(file).then(()=>{
+loginPage.classList.add("hidden");
+quizPage.classList.remove("hidden");
+startQuiz();
+});
 }
 
 function startQuiz(){
- currentIndex=0;score=0;wrongList=[];timeLeft=3000;
- timerInterval=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0)finishQuiz();},1000);
- nextQuestion();
+currentIndex=score=0; wrongList=[];
+timer=setInterval(()=>{timeLeft--;updateTimer();if(timeLeft<=0)finishQuiz();},1000);
+nextQuestion();
 }
 
 function updateTimer(){
- timer.textContent=`${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
+timerEl.textContent=`${String(Math.floor(timeLeft/60)).padStart(2,"0")}:${String(timeLeft%60).padStart(2,"0")}`;
 }
 
 function nextQuestion(){
- if(currentIndex>=questions.length) return finishQuiz();
- currentWord.textContent=questions[currentIndex].korea;
- answerInput.value="";
- progressBar.style.width=(currentIndex/questions.length*100)+"%";
+if(currentIndex>=questions.length)return finishQuiz();
+currentWord.textContent=questions[currentIndex].korea;
+answerInput.value=""; progressBar.style.width=(currentIndex/questions.length*100)+"%";
 }
 
 function submitAnswer(){
- const a=answerInput.value.trim();
- if(!a) return;
- if(a.toLowerCase()!==questions[currentIndex].indo.toLowerCase()){
-   wrongList.push({word:questions[currentIndex].korea,correct:questions[currentIndex].indo,your:a});
- } else score++;
- currentIndex++; nextQuestion();
+const a=answerInput.value.trim();
+if(!a)return;
+if(a.toLowerCase()!==questions[currentIndex].indo.toLowerCase()){
+wrongList.push({word:questions[currentIndex].korea,your:a,correct:questions[currentIndex].indo});
+}else score++;
+currentIndex++; nextQuestion();
 }
 
 function finishQuiz(){
- clearInterval(timerInterval);
- questionArea.classList.add("hidden");
- resultArea.classList.remove("hidden");
- const percent=Math.round(score/questions.length*100);
- scoreText.textContent=`Skor: ${score}/${questions.length} (${percent}%)`;
+clearInterval(timer);
+questionArea.classList.add("hidden");
+resultArea.classList.remove("hidden");
+const percent=Math.round(score/questions.length*100);
+scoreText.textContent=`Skor ${score}/${questions.length} (${percent}%)`;
 
- if(wrongList.length){
-   wrongWords.classList.remove("hidden");
-   wrongWords.innerHTML=wrongList.map(w=>`• ${w.word} → ${w.correct} (${w.your})`).join("<br>");
- }
-
- /* ===== KIRIM KE GOOGLE SHEET ===== */
- fetch(GOOGLE_SHEET_URL,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-    username,
-    kode:kodeSoal,
-    app:"koka",
-    score,
-    percent,
-    catatan:wrongList.map(w=>`${w.word}:${w.your}`)
-   })
- });
+if(wrongList.length){
+wrongWords.classList.remove("hidden");
+wrongWords.innerHTML=wrongList.map(w=>`• ${w.word} → ${w.correct}`).join("<br>");
 }
 
-function restartQuiz(){
- location.reload();
+/* ======== KIRIM KE GOOGLE SHEET ======== */
+fetch(GS_URL,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+username,
+kodeSoal,
+jenisAplikasi:"QUIZ",
+skor:score,
+persentase:percent,
+catatan: wrongList.length ? "Ada salah" : "Semua benar"
+})
+})
+.then(r=>r.text())
+.then(t=>console.log("GS:",t))
+.catch(e=>console.error("GS ERR",e));
 }
+
+function restartQuiz(){ location.reload(); }
 </script>
 </body>
 </html>
