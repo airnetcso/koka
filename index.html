@@ -92,9 +92,8 @@ button:active { transform: translateY(-1px); }
 </div>
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 <script>
-// URL APPS SCRIPT BARU
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycby4n_2wq6NSRDcKZ5h_EK52P6unhy4hcDKg_svaaXjN5K2kPQXOEYouvEtnQVIKMhHamA/exec";
-
+                      
 const users = [
   {username:"uus",password:"123"},
   {username:"hanarizka",password:"Nungkihana24!"},
@@ -244,7 +243,7 @@ function finishQuiz() {
     });
   }
 
-  // Kirim data ke Google Sheet via POST (URL baru)
+  // Kirim data ke Google Sheet via POST
   fetch(SPREADSHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -258,8 +257,14 @@ function finishQuiz() {
     })
   })
   .then(res => res.json())
-  .then(data => console.log("Data berhasil dikirim ke Sheet:", data))
-  .catch(err => console.error("Gagal kirim data ke Sheet:", err));
+  .then(data => {
+    console.log("Data berhasil dikirim ke Sheet:", data);
+    alert("✅ Skor berhasil dikirim ke Google Sheet!");
+  })
+  .catch(err => {
+    console.error("Gagal kirim data ke Sheet:", err);
+    alert("⚠️ Gagal mengirim skor ke Google Sheet. Cek console.");
+  });
 }
 
 function restartQuiz() {
@@ -294,7 +299,6 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-// Enter key submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
