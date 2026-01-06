@@ -163,15 +163,15 @@ function finishQuiz(){
 
  /* ===== KIRIM KE GOOGLE SHEET ===== */
  fetch(GOOGLE_SHEET_URL,{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({
-     username,
-     kode:kodeSoal,
-     app:"koka",
-     score,
-     percent,
-     catatan:wrongList.map(w=>`${w.word}:${w.your}`)
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+    username,
+    kode:kodeSoal,
+    app:"koka",
+    score,
+    percent,
+    catatan:wrongList.map(w=>`${w.word}:${w.your}`)
    })
  });
 }
