@@ -243,7 +243,7 @@ function finishQuiz() {
     });
   }
 
-  // Kirim data ke Google Sheet via POST
+  // POST data
   fetch(SPREADSHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -262,8 +262,18 @@ function finishQuiz() {
     alert("✅ Skor berhasil dikirim ke Google Sheet!");
   })
   .catch(err => {
-    console.error("Gagal kirim data ke Sheet:", err);
-    alert("⚠️ Gagal mengirim skor ke Google Sheet. Cek console.");
+    console.warn("POST gagal, fallback GET:", err);
+    // fallback GET (buka tab baru)
+    const params = new URLSearchParams({
+      username: username || "Anonymous",
+      kodeSoal: kodeSoal || "Unknown",
+      jenisAplikasi: "QUIZ",
+      skor: score,
+      persentase: percent,
+      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
+    });
+    window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
+    alert("⚠️ POST gagal, tapi data dikirim via GET fallback.");
   });
 }
 
@@ -299,6 +309,7 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
+// Enter key submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
