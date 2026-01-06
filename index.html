@@ -244,20 +244,22 @@ function finishQuiz() {
     });
   }
 
-  // Kirim data via GET redirect (bypass CORS 100%, ga ada error)
-  const params = new URLSearchParams({
-    username: username || "Anonymous",
-    kodeSoal: kodeSoal || "Unknown",
-    jenisAplikasi: "QUIZ",
-    skor: score,
-    persentase: percent,
-    catatan: wrongList.length ? JSON.stringify(wrongList) : ""
-  });
-
-  // Buka tab baru (data masuk otomatis ke sheet)
-  window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
-
-  console.log("Data sudah dikirim via GET! Cek Google Sheet sekarang.");
+  // Kirim data ke Google Sheet via POST tanpa buka tab baru
+  fetch(SPREADSHEET_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: username || "Anonymous",
+      kodeSoal: kodeSoal || "Unknown",
+      jenisAplikasi: "QUIZ",
+      skor: score,
+      persentase: percent,
+      catatan: wrongList.length ? wrongList : []
+    })
+  })
+  .then(res => res.json())
+  .then(data => console.log("Data berhasil dikirim ke Sheet:", data))
+  .catch(err => console.error("Gagal kirim data ke Sheet:", err));
 }
 
 function restartQuiz() {
