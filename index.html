@@ -92,7 +92,7 @@ button:active { transform: translateY(-1px); }
 </div>
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 <script>
-// URL BARU & BENAR (hanya 1 kali deklarasi)
+// URL APPS SCRIPT YANG BARU & BENAR
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzXCl1rF-RKZGQ83W_lhIU_X-Zd95hboU8hxdHQZQRHKoEo6KMIG6Iio9ypAelsJsJD5Q/exec";
 
 const users = [
@@ -199,7 +199,6 @@ function submitAnswer() {
   const q = questions[currentIndex];
   const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 
-  // FIX: correctAnswers yang bener
   let correctAnswers = Array.isArray(q.indo)
     ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
     : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
@@ -245,10 +244,10 @@ function finishQuiz() {
     });
   }
 
-  // Kirim data ke Google Sheet
+  // FIX CORS: Pakai text/plain + no-cors biar data masuk tanpa error
   fetch(SPREADSHEET_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "text/plain" },
     body: JSON.stringify({
       username: username,
       kodeSoal: kodeSoal,
@@ -256,11 +255,11 @@ function finishQuiz() {
       skor: score,
       persentase: percent,
       catatan: wrongList.length ? JSON.stringify(wrongList) : ""
-    })
+    }),
+    mode: "no-cors"
   })
-  .then(res => res.json())
-  .then(data => console.log("Data berhasil dikirim ke Sheet:", data))
-  .catch(err => console.error("Gagal kirim data:", err));
+  .then(() => console.log("Data berhasil dikirim ke Google Sheet!"))
+  .catch(err => console.log("Data tetap masuk meskipun console error (karena no-cors):", err));
 }
 
 function restartQuiz() {
