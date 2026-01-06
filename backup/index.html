@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -8,7 +9,6 @@
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulseCorrect { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 @keyframes pulseWrong { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 body {
   font-family: 'Segoe UI', system-ui, Arial, sans-serif;
@@ -40,29 +40,21 @@ button {
 }
 button:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(16,185,129,0.45); }
 button:active { transform: translateY(-1px); }
-
 .error { color: #ff6b6b; text-align: center; margin: 12px 0; font-weight: 600; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; }
 .hidden { display: none !important; }
-
 #timer { text-align: center; font-size: 32px; font-weight: bold; margin: 20px 0; padding: 14px; border-radius: 14px;
   background: rgba(220,38,38,0.25); transition: all 0.5s; }
 #timer.warning { background: rgba(252,211,77,0.4); color: #fef3c7; animation: pulseWrong 1s infinite alternate; }
-
 .progress { height: 14px; background: rgba(255,255,255,0.15); border-radius: 7px; margin: 20px 0; overflow: hidden; }
 .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #059669); width: 0%; transition: width 0.8s ease; }
-
 #questionNumber { text-align: center; font-size: 20px; margin: 10px 0; color: #e0f2fe; }
-
 .question strong { font-size: 48px; display: block; margin: 40px 0 30px; color: #fff; text-align: center;
   font-weight: 700; text-shadow: 0 3px 12px rgba(0,0,0,0.6); }
-
 #feedback { text-align: center; font-size: 28px; font-weight: bold; margin: 20px 0; height: 40px; animation: fadeIn 0.5s; }
 .correct { color: #86efac; animation: pulseCorrect 0.6s; }
 .wrong { color: #fca5a5; animation: pulseWrong 0.6s; }
-
 .wrong-list { font-size: 17px; line-height: 1.9; margin: 25px 0; background: rgba(254,243,199,0.95); color: #92400e;
   padding: 22px; border-radius: 14px; border-left: 6px solid #ca8a04; }
-
 .footer { position: relative; z-index: 2; margin-top: 50px; font-size: 14px; color: rgba(255,255,255,0.85); text-align: center; }
 </style>
 </head>
@@ -75,7 +67,6 @@ button:active { transform: translateY(-1px); }
   <div class="error" id="errorMsg"></div>
   <button onclick="login()">MULAI / 시작</button>
 </div>
-
 <div class="container hidden" id="quizPage">
   <h1>TEST KOSA KATA</h1>
   <div id="timer">50:00</div>
@@ -88,7 +79,6 @@ button:active { transform: translateY(-1px); }
     <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
     <button onclick="submitAnswer()" id="submitBtn">SUBMIT</button>
   </div>
-
   <div id="resultArea" class="hidden">
     <h2 style="color:#fff; margin-bottom:20px; text-align:center;">Hasil Test</h2>
     <p id="scoreText" style="font-size:32px; font-weight:bold; color:#d1fae5; text-align:center;"></p>
@@ -101,14 +91,13 @@ button:active { transform: translateY(-1px); }
     </button>
   </div>
 </div>
-
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
-
 <script>
-const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbwqd4g4b7bPGa4jHgBiSL6LdI2uUSgyT6oRinMerl8vYK0fX-EoY5DWKnXMU0JWQFvDlw/exec";
+// URL APPS SCRIPT BENAR
+const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzXCl1rF-RKZGQ83W_lhIU_X-Zd95hboU8hxdHQZQRHKoEo6KMIG6Iio9ypAelsJsJD5Q/exec";
 
 const users = [
-  {username:"user1",password:"12345"},
+  {username:"uus",password:"123"},
   {username:"hanarizka",password:"Nungkihana24!"},
   {username:"Heri",password:"heri99"},
   {username:"siswa01",password:"12345"},
@@ -139,16 +128,12 @@ function login() {
   kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
   const error = document.getElementById("errorMsg");
   error.textContent = "";
-
   if (!username || !pass || !kodeSoal) { error.textContent = "Lengkapi semua kolom!"; return; }
-
   const fileName = kodeMapping[kodeSoal];
   if (!fileName) { error.textContent = "Kode akses tidak valid!"; return; }
-
   const user = users.find(u => u.username === username && u.password === pass);
   if (!user) { error.textContent = "Username / Password salah!"; return; }
   if (user.role === "admin") { location.href = "https://airnetcso.github.io/admin/"; return; }
-
   loadQuestions(fileName).then(() => {
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("quizPage").classList.remove("hidden");
@@ -200,7 +185,6 @@ function updateProgress() {
 
 function nextQuestion() {
   if (currentIndex >= questions.length) { finishQuiz(); return; }
-  
   document.getElementById("currentWord").textContent = questions[currentIndex].korea;
   document.getElementById("answerInput").value = "";
   document.getElementById("answerInput").focus();
@@ -212,11 +196,10 @@ function nextQuestion() {
 function submitAnswer() {
   const answer = document.getElementById("answerInput").value.trim();
   if (!answer) return;
-  
   const feedback = document.getElementById("feedback");
   const q = questions[currentIndex];
-  
   const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+
   let correctAnswers = Array.isArray(q.indo)
     ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
     : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
@@ -250,10 +233,8 @@ function finishQuiz() {
   clearInterval(timerInterval);
   document.getElementById("questionArea").classList.add("hidden");
   document.getElementById("resultArea").classList.remove("hidden");
-
   const percent = Math.round((score / questions.length) * 100);
   document.getElementById("scoreText").textContent = `Skor: ${score}/${questions.length} (${percent}%)`;
-
   const wrongDiv = document.getElementById("wrongWords");
   wrongDiv.innerHTML = "";
   if (wrongList.length > 0) {
@@ -264,19 +245,20 @@ function finishQuiz() {
     });
   }
 
-  // Kirim ke Google Sheet
-  fetch(SPREADSHEET_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: username,
-      kodeSoal: kodeSoal,
-      jenisAplikasi: "QUIZ",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
-    })
-  }).catch(err => console.error("Gagal kirim data:", err));
+  // Kirim data via GET redirect (bypass CORS 100%, ga ada error)
+  const params = new URLSearchParams({
+    username: username || "Anonymous",
+    kodeSoal: kodeSoal || "Unknown",
+    jenisAplikasi: "QUIZ",
+    skor: score,
+    persentase: percent,
+    catatan: wrongList.length ? JSON.stringify(wrongList) : ""
+  });
+
+  // Buka tab baru (data masuk otomatis ke sheet)
+  window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
+
+  console.log("Data sudah dikirim via GET! Cek Google Sheet sekarang.");
 }
 
 function restartQuiz() {
