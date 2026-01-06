@@ -71,7 +71,7 @@ button:active { transform: translateY(-1px); }
   <div id="timer">50:00</div>
   <div id="questionNumber">Soal 1 dari 50</div>
   <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
- 
+  
   <div id="questionArea">
     <div id="feedback"></div>
     <div class="question"><strong id="currentWord"></strong></div>
@@ -92,7 +92,7 @@ button:active { transform: translateY(-1px); }
 </div>
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 <script>
-// URL APPS SCRIPT YANG BARU & BENAR
+// URL APPS SCRIPT BENAR
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzXCl1rF-RKZGQ83W_lhIU_X-Zd95hboU8hxdHQZQRHKoEo6KMIG6Iio9ypAelsJsJD5Q/exec";
 
 const users = [
@@ -244,38 +244,20 @@ function finishQuiz() {
     });
   }
 
-  // Cara baru: Kirim data via redirect GET (100% bypass CORS)
+  // Kirim data via GET redirect (bypass CORS 100%, ga ada error)
   const params = new URLSearchParams({
-    username: username,
-    kodeSoal: kodeSoal,
+    username: username || "Anonymous",
+    kodeSoal: kodeSoal || "Unknown",
     jenisAplikasi: "QUIZ",
     skor: score,
     persentase: percent,
     catatan: wrongList.length ? JSON.stringify(wrongList) : ""
   });
 
-  // Buka tab baru ke script (data masuk otomatis)
+  // Buka tab baru (data masuk otomatis ke sheet)
   window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
 
-  console.log("Data dikirim via GET - cek sheet sekarang!");
-}
-
-  // FIX CORS: Pakai text/plain + no-cors biar data masuk tanpa error
-  fetch(SPREADSHEET_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify({
-      username: username,
-      kodeSoal: kodeSoal,
-      jenisAplikasi: "QUIZ",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
-    }),
-    mode: "no-cors"
-  })
-  .then(() => console.log("Data berhasil dikirim ke Google Sheet!"))
-  .catch(err => console.log("Data tetap masuk meskipun console error (karena no-cors):", err));
+  console.log("Data sudah dikirim via GET! Cek Google Sheet sekarang.");
 }
 
 function restartQuiz() {
