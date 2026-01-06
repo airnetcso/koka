@@ -93,8 +93,7 @@ button:active { transform: translateY(-1px); }
 </div>
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 <script>
-// URL APPS SCRIPT BENAR
-const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzXCl1rF-RKZGQ83W_lhIU_X-Zd95hboU8hxdHQZQRHKoEo6KMIG6Iio9ypAelsJsJD5Q/exec";
+const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbyfCZ5YNQHDLyKWatqj-diL8tXRRwXBKfJaaYMqcqoShABYy4Gx6QpexPOB_MkZwpIwLw/exec";
 
 const users = [
   {username:"uus",password:"123"},
@@ -245,20 +244,38 @@ function finishQuiz() {
     });
   }
 
-  // Kirim data via GET redirect (bypass CORS 100%, ga ada error)
-  const params = new URLSearchParams({
-    username: username || "Anonymous",
-    kodeSoal: kodeSoal || "Unknown",
-    jenisAplikasi: "QUIZ",
-    skor: score,
-    persentase: percent,
-    catatan: wrongList.length ? JSON.stringify(wrongList) : ""
+  // POST data
+  fetch(SPREADSHEET_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: username || "Anonymous",
+      kodeSoal: kodeSoal || "Unknown",
+      jenisAplikasi: "QUIZ",
+      skor: score,
+      persentase: percent,
+      catatan: wrongList.length ? wrongList : []
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Data berhasil dikirim ke Sheet:", data);
+    alert("✅ Skor berhasil dikirim ke Google Sheet!");
+  })
+  .catch(err => {
+    console.warn("POST gagal, fallback GET:", err);
+    // fallback GET (buka tab baru)
+    const params = new URLSearchParams({
+      username: username || "Anonymous",
+      kodeSoal: kodeSoal || "Unknown",
+      jenisAplikasi: "QUIZ",
+      skor: score,
+      persentase: percent,
+      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
+    });
+    window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
+    alert("⚠️ POST gagal, tapi data dikirim via GET fallback.");
   });
-
-  // Buka tab baru (data masuk otomatis ke sheet)
-  window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
-
-  console.log("Data sudah dikirim via GET! Cek Google Sheet sekarang.");
 }
 
 function restartQuiz() {
