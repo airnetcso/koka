@@ -58,6 +58,7 @@ button:active { transform: translateY(-1px); }
 </style>
 </head>
 <body>
+
 <div class="container" id="loginPage">
   <h1>TEST KOSA KATA</h1>
   <input type="text" id="username" placeholder="Username / 이름" autocomplete="off">
@@ -72,14 +73,14 @@ button:active { transform: translateY(-1px); }
   <div id="timer">50:00</div>
   <div id="questionNumber">Soal 1 dari 50</div>
   <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-  
+
   <div id="questionArea">
     <div id="feedback"></div>
     <div class="question"><strong id="currentWord"></strong></div>
     <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
     <button onclick="submitAnswer()" id="submitBtn">SUBMIT</button>
   </div>
-  
+
   <div id="resultArea" class="hidden">
     <h2 style="color:#fff; margin-bottom:20px; text-align:center;">Hasil Test</h2>
     <p id="scoreText" style="font-size:32px; font-weight:bold; color:#d1fae5; text-align:center;"></p>
@@ -96,6 +97,7 @@ button:active { transform: translateY(-1px); }
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
+// GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbxDP_vNFvW0Rs-HHC3FuAgpr5fpqttyLXhI4DbXgfMivUnfPwBcNzQWjjAzoQNF4cKU/exec";
 
 const users = [
@@ -242,45 +244,50 @@ function finishQuiz() {
   clearInterval(timerInterval);
   document.getElementById("questionArea").classList.add("hidden");
   document.getElementById("resultArea").classList.remove("hidden");
-  const percent = Math.round((score / questions.length) * 100);
-  document.getElementById("scoreText").textContent = `Skor: ${score}/${questions.length} (${percent}%)`;
+
+  const totalQuestions = questions.length;
+  const percent = Math.round((score / totalQuestions) * 100);
+  document.getElementById("scoreText").textContent = `Skor: ${score}/${totalQuestions} (${percent}%)`;
 
   const wrongDiv = document.getElementById("wrongWords");
   wrongDiv.innerHTML = "";
+  let keterangan = "";
   if (wrongList.length > 0) {
     wrongDiv.classList.remove("hidden");
     wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br><br>";
     wrongList.forEach(i => {
       wrongDiv.innerHTML += `• <strong>${i.word}</strong> → ${i.correct} <br><small style="color:#78350f;">(jawaban kamu: ${i.your})</small><br><br>`;
     });
+    keterangan = wrongList.map(i => `${i.word} → ${i.your} (benar: ${i.correct})`).join(" | ");
+  } else {
+    keterangan = "Semua benar! Perfect!";
   }
 
-  // Kirim data ke Google Sheet
+  // Data sesuai kolom Google Sheet
+  const dataToSend = {
+    waktu: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}),
+    namaSiswa: username || "Anonymous",
+    code: kodeSoal || "Unknown",
+    kosaKata: `${score}/${totalQuestions} (${percent}%)`,
+    ubt: "-", // ubah kalau ada nilai UBT
+    latihanSoal: totalQuestions,
+    keterangan: keterangan
+  };
+
+  // Kirim ke Google Apps Script
   fetch(SPREADSHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: username || "Anonymous",
-      kodeSoal: kodeSoal || "Unknown",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? wrongList : []
-    })
+    body: JSON.stringify(dataToSend)
   })
   .then(res => res.json())
   .then(data => {
-    console.log("Response dari Sheet:", data);
+    console.log("Success:", data);
     alert("✅ Skor berhasil dikirim ke Google Sheet!");
   })
   .catch(err => {
-    console.error("POST gagal:", err);
-    const params = new URLSearchParams({
-      username: username || "Anonymous",
-      kodeSoal: kodeSoal || "Unknown",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
-    });
+    console.error("Error POST:", err);
+    const params = new URLSearchParams(dataToSend);
     window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
     alert("⚠️ POST gagal, data dikirim via GET fallback.");
   });
@@ -318,6 +325,7 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
+// Enter untuk submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
