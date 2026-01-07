@@ -283,7 +283,7 @@ function finishQuiz() {
     body: JSON.stringify({
       username: username || "Anonymous",
       kodeSoal: kodeSoal || "Unknown",
-      jenisAplikasi: "KOKA",
+      jenisAplikasi: "koka",
       skor: score,
       persentase: percent,
       catatan: wrongList.length ? wrongList : []
@@ -300,7 +300,7 @@ function finishQuiz() {
     const params = new URLSearchParams({
       username: username || "Anonymous",
       kodeSoal: kodeSoal || "Unknown",
-      jenisAplikasi: "QUIZ",
+      jenisAplikasi: "koka",
       skor: score,
       persentase: percent,
       catatan: wrongList.length ? JSON.stringify(wrongList) : ""
