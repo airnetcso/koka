@@ -96,9 +96,6 @@ button:active { transform: translateY(-1px); }
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
-const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbwOLAuFP7xcquRg0RHwtMV-pqRRZ1sW-Qof3kH0dFtRRZjIxChiLYTVcYoxWYPyjNsbWg/exec
-";
-
 const users = [
   {username:"uus",password:"111"},
   {username:"hanarizka",password:"Nungkihana24!"},
@@ -176,11 +173,7 @@ function updateTimer() {
   const s = String(timeLeft % 60).padStart(2, "0");
   const timerEl = document.getElementById("timer");
   timerEl.textContent = `${m}:${s}`;
-  if (timeLeft <= 300) {
-    timerEl.classList.add("warning");
-  } else {
-    timerEl.classList.remove("warning");
-  }
+  if (timeLeft <= 300) timerEl.classList.add("warning"); else timerEl.classList.remove("warning");
 }
 
 function updateQuestionNumber() {
@@ -215,9 +208,7 @@ function submitAnswer() {
     : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
 
   let isCorrect = correctAnswers.includes(normUser);
-  if (!isCorrect) {
-    isCorrect = correctAnswers.some(c => levenshtein(normUser, c) <= 2);
-  }
+  if (!isCorrect) isCorrect = correctAnswers.some(c => levenshtein(normUser, c) <= 2);
 
   if (isCorrect) {
     score++;
@@ -256,18 +247,18 @@ function finishQuiz() {
     });
   }
 
-  // --- POST ke Google Sheet sesuai format baru ---
-  fetch(SPREADSHEET_URL, {
+  // === KIRIM DATA KE GOOGLE SHEET TERBARU ===
+  fetch("https://script.google.com/macros/s/AKfycbwOLAuFP7xcquRg0RHwtMV-pqRRZ1s-W-Qof3kH0dFtRRZjIxChiLYTVcYoxWYPyjNsbWg/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      waktu: new Date().toLocaleString("id-ID"), // WAKTU
-      namaSiswa: username || "Anonymous",        // NAMA SISWA
-      code: kodeSoal || "Unknown",              // CODE
-      kosaKata: score,                           // KOSA KATA
-      ubt: "",                                   // UBT (kosong)
-      latihanSoal: "",                           // LATIHAN SOAL (kosong)
-      keterangan: wrongList.length ? wrongList : [] // KETERANGAN
+      WAKTU: new Date().toLocaleString("id-ID"),
+      NAMA_SISWA: username || "Anonymous",
+      CODE: kodeSoal || "Unknown",
+      KOSA_KATA: score,
+      UBT: "",
+      LATIHAN_SOAL: percent,
+      KETERANGAN: wrongList.length ? wrongList : ""
     })
   })
   .then(res => res.json())
@@ -278,15 +269,15 @@ function finishQuiz() {
   .catch(err => {
     console.error("POST gagal:", err);
     const params = new URLSearchParams({
-      waktu: new Date().toLocaleString("id-ID"),
-      namaSiswa: username || "Anonymous",
-      code: kodeSoal || "Unknown",
-      kosaKata: score,
-      ubt: "",
-      latihanSoal: "",
-      keterangan: wrongList.length ? JSON.stringify(wrongList) : ""
+      WAKTU: new Date().toLocaleString("id-ID"),
+      NAMA_SISWA: username || "Anonymous",
+      CODE: kodeSoal || "Unknown",
+      KOSA_KATA: score,
+      UBT: "",
+      LATIHAN_SOAL: percent,
+      KETERANGAN: wrongList.length ? JSON.stringify(wrongList) : ""
     });
-    window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
+    window.open("https://script.google.com/macros/s/AKfycbwOLAuFP7xcquRg0RHwtMV-pqRRZ1s-W-Qof3kH0dFtRRZjIxChiLYTVcYoxWYPyjNsbWg/exec?" + params.toString(), "_blank");
     alert("⚠️ POST gagal, data dikirim via GET fallback.");
   });
 }
@@ -323,6 +314,7 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
+// Enter untuk submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
