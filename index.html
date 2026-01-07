@@ -152,7 +152,7 @@ let attemptCount = 0; // <<<< BARU: hitung kesalahan di soal yang sama
 function login() {
  username = document.getElementById("username").value.trim();
  const pass = document.getElementById("password").value.trim();
- kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
+ kodeSoal = document.getElementById("kodeSoal").value.trim().toLowerCase();
  const error = document.getElementById("errorMsg");
  error.textContent = "";
 
