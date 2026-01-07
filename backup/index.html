@@ -26,17 +26,24 @@ body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0
   animation: fadeIn 0.9s ease-out;
 }
 h1 { font-size: 34px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+
+/* PERBAIKAN UTAMA DI SINI: tambah pointer-events & pastikan input bisa diklik */
 input[type="text"], input[type="password"] {
   width: 100%; padding: 16px; margin: 12px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
   border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white;
   transition: all 0.3s ease;
+  pointer-events: auto; /* tambahan: pastikan bisa diklik */
+  position: relative;   /* tambahan: biar z-index bekerja */
+  z-index: 3;           /* tambahan: di atas overlay */
 }
-input::placeholder { color: rgba(255,255,255,0.7); }
+input::placeholder { color: rgba(255,255,255,0.7); opacity: 1; } /* fix opacity placeholder di beberapa browser */
 input:focus { border-color: #fff; background: rgba(255,255,255,0.25); outline: none; box-shadow: 0 0 0 5px rgba(255,255,255,0.2); }
+
 button {
   width: 100%; padding: 16px; margin: 18px 0 8px; font-size: 20px; font-weight: bold; border: none;
   border-radius: 12px; color: white; cursor: pointer; background: linear-gradient(90deg, #10b981, #059669);
   transition: all 0.3s ease;
+  position: relative; z-index: 3; /* tambahan biar tombol juga aman */
 }
 button:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(16,185,129,0.45); }
 button:active { transform: translateY(-1px); }
@@ -59,6 +66,7 @@ button:active { transform: translateY(-1px); }
 </style>
 </head>
 <body>
+
 <div class="container" id="loginPage">
   <h1>TEST KOSA KATA</h1>
   <input type="text" id="username" placeholder="Username / 이름" autocomplete="off">
@@ -67,18 +75,20 @@ button:active { transform: translateY(-1px); }
   <div class="error" id="errorMsg"></div>
   <button onclick="login()">MULAI / 시작</button>
 </div>
+
 <div class="container hidden" id="quizPage">
   <h1>TEST KOSA KATA</h1>
   <div id="timer">50:00</div>
   <div id="questionNumber">Soal 1 dari 50</div>
   <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-  
+
   <div id="questionArea">
     <div id="feedback"></div>
     <div class="question"><strong id="currentWord"></strong></div>
     <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
     <button onclick="submitAnswer()" id="submitBtn">SUBMIT</button>
   </div>
+
   <div id="resultArea" class="hidden">
     <h2 style="color:#fff; margin-bottom:20px; text-align:center;">Hasil Test</h2>
     <p id="scoreText" style="font-size:32px; font-weight:bold; color:#d1fae5; text-align:center;"></p>
@@ -91,24 +101,32 @@ button:active { transform: translateY(-1px); }
     </button>
   </div>
 </div>
+
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
+
 <script>
-const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbyfCZ5YNQHDLyKWatqj-diL8tXRRwXBKfJaaYMqcqoShABYy4Gx6QpexPOB_MkZwpIwLw/exec";
+// GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
+const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzwdfNflhqIyVWo8knAyB2nWtzlkbPiRHfMCJV_O_mxkZravDprrAhMNV3Qu75WFYgk0g/exec";
 
 const users = [
-  {username:"uus",password:"123"},
+  {username:"uus",password:"111"},
   {username:"hanarizka",password:"Nungkihana24!"},
-  {username:"Heri",password:"heri99"},
-  {username:"siswa01",password:"12345"},
   {username:"windi",password:"Windi2000"},
   {username:"rismaya97",password:"bahasakorea"},
-  {username:"wantikas",password:"200022",role:"admin"},
-  {username:"Fikrisurya",password:"464646"},
-  {username:"Mutiara2003",password:"Mutiara14"},
   {username:"sita77",password:"minyooki"},
   {username:"Aini185",password:"Doraemon"},
   {username:"Hangeulfei",password:"studykorea02"},
-  {username:"Hamdan106",password:"Fukuo106"}
+  {username:"Hamdan106",password:"Fukuo106"},
+  {username:"Heri",password:"heri99"},
+  {username:"Fikrisurya",password:"464646"},
+  {username:"Mutiara2003",password:"Mutiara14"},
+  {username:"wantikas",password:"200022"},
+  {username:"Dininidia",password:"dininidia11"},
+  {username:"kaniarostayuni9",password:"Kania1313"},
+  {username:"Dikisetiawan07",password:"Diki2709"},
+  {username:"Aisyah18",password:"Aisyah18."},
+  {username:"Rizka2026",password:"butterfly24"},
+  {username:"Zhafif07",password:"20060722"}
 ];
 
 const kodeMapping = {
@@ -127,12 +145,13 @@ function login() {
   kodeSoal = document.getElementById("kodeSoal").value.trim().toUpperCase();
   const error = document.getElementById("errorMsg");
   error.textContent = "";
+
   if (!username || !pass || !kodeSoal) { error.textContent = "Lengkapi semua kolom!"; return; }
   const fileName = kodeMapping[kodeSoal];
   if (!fileName) { error.textContent = "Kode akses tidak valid!"; return; }
   const user = users.find(u => u.username === username && u.password === pass);
   if (!user) { error.textContent = "Username / Password salah!"; return; }
-  if (user.role === "admin") { location.href = "https://airnetcso.github.io/admin/"; return; }
+
   loadQuestions(fileName).then(() => {
     document.getElementById("loginPage").classList.add("hidden");
     document.getElementById("quizPage").classList.remove("hidden");
@@ -178,7 +197,7 @@ function updateQuestionNumber() {
 }
 
 function updateProgress() {
-  const percent = ((currentIndex) / questions.length) * 100;
+  const percent = (currentIndex / questions.length) * 100;
   document.getElementById("progressBar").style.width = percent + "%";
 }
 
@@ -197,6 +216,7 @@ function submitAnswer() {
   if (!answer) return;
   const feedback = document.getElementById("feedback");
   const q = questions[currentIndex];
+
   const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 
   let correctAnswers = Array.isArray(q.indo)
@@ -232,49 +252,50 @@ function finishQuiz() {
   clearInterval(timerInterval);
   document.getElementById("questionArea").classList.add("hidden");
   document.getElementById("resultArea").classList.remove("hidden");
-  const percent = Math.round((score / questions.length) * 100);
-  document.getElementById("scoreText").textContent = `Skor: ${score}/${questions.length} (${percent}%)`;
+
+  const totalQuestions = questions.length;
+  const percent = Math.round((score / totalQuestions) * 100);
+  document.getElementById("scoreText").textContent = `Skor: ${score}/${totalQuestions} (${percent}%)`;
+
   const wrongDiv = document.getElementById("wrongWords");
   wrongDiv.innerHTML = "";
+  let keterangan = "";
   if (wrongList.length > 0) {
     wrongDiv.classList.remove("hidden");
     wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br><br>";
     wrongList.forEach(i => {
       wrongDiv.innerHTML += `• <strong>${i.word}</strong> → ${i.correct} <br><small style="color:#78350f;">(jawaban kamu: ${i.your})</small><br><br>`;
     });
+    keterangan = wrongList.map(i => `${i.word} → ${i.your} (benar: ${i.correct})`).join(" | ");
+  } else {
+    keterangan = "Semua benar! Perfect!";
   }
 
-  // POST data
+  const dataToSend = {
+    waktu: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}),
+    namaSiswa: username || "Anonymous",
+    code: kodeSoal || "Unknown",
+    kosaKata: `${score}/${totalQuestions} (${percent}%)`,
+    ubt: "-",
+    latihanSoal: totalQuestions,
+    keterangan: keterangan
+  };
+
   fetch(SPREADSHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: username || "Anonymous",
-      kodeSoal: kodeSoal || "Unknown",
-      jenisAplikasi: "QUIZ",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? wrongList : []
-    })
+    body: JSON.stringify(dataToSend)
   })
   .then(res => res.json())
   .then(data => {
-    console.log("Data berhasil dikirim ke Sheet:", data);
+    console.log("Success:", data);
     alert("✅ Skor berhasil dikirim ke Google Sheet!");
   })
   .catch(err => {
-    console.warn("POST gagal, fallback GET:", err);
-    // fallback GET (buka tab baru)
-    const params = new URLSearchParams({
-      username: username || "Anonymous",
-      kodeSoal: kodeSoal || "Unknown",
-      jenisAplikasi: "QUIZ",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
-    });
+    console.error("Error POST:", err);
+    const params = new URLSearchParams(dataToSend);
     window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
-    alert("⚠️ POST gagal, tapi data dikirim via GET fallback.");
+    alert("⚠️ POST gagal, data dikirim via GET fallback.");
   });
 }
 
@@ -310,7 +331,6 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-// Enter key submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
