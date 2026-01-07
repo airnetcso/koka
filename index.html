@@ -25,17 +25,24 @@ body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0
   animation: fadeIn 0.9s ease-out;
 }
 h1 { font-size: 34px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+
+/* PERBAIKAN UTAMA DI SINI: tambah pointer-events & pastikan input bisa diklik */
 input[type="text"], input[type="password"] {
   width: 100%; padding: 16px; margin: 12px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
   border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white;
   transition: all 0.3s ease;
+  pointer-events: auto; /* tambahan: pastikan bisa diklik */
+  position: relative;   /* tambahan: biar z-index bekerja */
+  z-index: 3;           /* tambahan: di atas overlay */
 }
-input::placeholder { color: rgba(255,255,255,0.7); }
+input::placeholder { color: rgba(255,255,255,0.7); opacity: 1; } /* fix opacity placeholder di beberapa browser */
 input:focus { border-color: #fff; background: rgba(255,255,255,0.25); outline: none; box-shadow: 0 0 0 5px rgba(255,255,255,0.2); }
+
 button {
   width: 100%; padding: 16px; margin: 18px 0 8px; font-size: 20px; font-weight: bold; border: none;
   border-radius: 12px; color: white; cursor: pointer; background: linear-gradient(90deg, #10b981, #059669);
   transition: all 0.3s ease;
+  position: relative; z-index: 3; /* tambahan biar tombol juga aman */
 }
 button:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(16,185,129,0.45); }
 button:active { transform: translateY(-1px); }
@@ -98,7 +105,7 @@ button:active { transform: translateY(-1px); }
 
 <script>
 // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
-const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzwdfNflhqIyVWo8knAyB2nWtzlkbPiRHfMCJV_O_mxkZravDprrAhMNV3Qu75WFYgk0g/exec";
+const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbxDP_vNFvW0Rs-HHC3FuAgpr5fpqttyLXhI4DbXgfMivUnfPwBcNzQWjjAzoQNF4cKU/exec";
 
 const users = [
   {username:"uus",password:"111"},
@@ -263,18 +270,16 @@ function finishQuiz() {
     keterangan = "Semua benar! Perfect!";
   }
 
-  // Data sesuai kolom Google Sheet
   const dataToSend = {
     waktu: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}),
     namaSiswa: username || "Anonymous",
     code: kodeSoal || "Unknown",
     kosaKata: `${score}/${totalQuestions} (${percent}%)`,
-    ubt: "-", // ubah kalau ada nilai UBT
+    ubt: "-",
     latihanSoal: totalQuestions,
     keterangan: keterangan
   };
 
-  // Kirim ke Google Apps Script
   fetch(SPREADSHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -325,7 +330,6 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-// Enter untuk submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
