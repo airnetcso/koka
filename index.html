@@ -96,8 +96,6 @@ button:active { transform: translateY(-1px); }
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
-// === GANTI DENGAN URL WEB APP BARU KAMU SETELAH DEPLOY ===
-
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbxBZF5DT3aRcDiB7Y8OZJLh1qPlw10Qu7al_UFLfJmB70zwHjyWZHSRqRMkWjfCKuWBwA/exec";
 
 const users = [
@@ -257,17 +255,18 @@ function finishQuiz() {
     });
   }
 
-  // Kirim data ke Google Sheet
+  // --- POST ke Google Sheet sesuai format baru ---
   fetch(SPREADSHEET_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: username || "Anonymous",
-      kodeSoal: kodeSoal || "Unknown",
-      jenisAplikasi: "koka",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? wrongList : []
+      waktu: new Date().toLocaleString("id-ID"), // WAKTU
+      namaSiswa: username || "Anonymous",        // NAMA SISWA
+      code: kodeSoal || "Unknown",              // CODE
+      kosaKata: score,                           // KOSA KATA
+      ubt: "",                                   // UBT (kosong)
+      latihanSoal: "",                           // LATIHAN SOAL (kosong)
+      keterangan: wrongList.length ? wrongList : [] // KETERANGAN
     })
   })
   .then(res => res.json())
@@ -278,12 +277,13 @@ function finishQuiz() {
   .catch(err => {
     console.error("POST gagal:", err);
     const params = new URLSearchParams({
-      username: username || "Anonymous",
-      kodeSoal: kodeSoal || "Unknown",
-      jenisAplikasi: "koka",
-      skor: score,
-      persentase: percent,
-      catatan: wrongList.length ? JSON.stringify(wrongList) : ""
+      waktu: new Date().toLocaleString("id-ID"),
+      namaSiswa: username || "Anonymous",
+      code: kodeSoal || "Unknown",
+      kosaKata: score,
+      ubt: "",
+      latihanSoal: "",
+      keterangan: wrongList.length ? JSON.stringify(wrongList) : ""
     });
     window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
     alert("⚠️ POST gagal, data dikirim via GET fallback.");
@@ -322,7 +322,6 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-// Enter untuk submit
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
