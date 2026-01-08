@@ -128,9 +128,9 @@ const users = [
 ];
 
 const kodeMapping = {
- "H050126": "soal1.json",
- "SAREWAE": "test.json",
- "R43213": "soal2.json",
+ "h050126": "soal1.json",
+ "sarewae": "test.json",
+ "r43213": "soal2.json",
  "mugunghwa": "soal11.json",
  "kimchi": "soal12.json",
  "seoul": "soal13.json",
@@ -138,16 +138,12 @@ const kodeMapping = {
  "kimtaehyung": "soal15.json",
  "chuseok": "soal16.json",
  "kimbap": "soal17.json",
- "SAREWAE": "test.json",
- "R43213": "soal2.json",
  "saranghae": "soal3.json"
- // Tambahin kode untuk chunk lu di sini, misal:
- // "KOSA91": "https://raw.githubusercontent.com/username/repo/main/soal9_chunk1.json",
 };
 
 let questions = [], currentIndex = 0, score = 0, wrongList = [], timerInterval, timeLeft = 3000;
 let username = "", kodeSoal = "";
-let attemptCount = 0; // <<<< BARU: hitung kesalahan di soal yang sama
+let attemptCount = 0;
 
 function login() {
  username = document.getElementById("username").value.trim();
@@ -173,18 +169,18 @@ function login() {
 }
 
 async function loadQuestions(fileName) {
-  const res = await fetch(fileName);
-  if (!res.ok) throw new Error("File soal tidak ditemukan atau error jaringan");
-  let data = await res.json();
+ const res = await fetch(fileName);
+ if (!res.ok) throw new Error("File soal tidak ditemukan atau error jaringan");
+ let data = await res.json();
 
-  // Fisher-Yates shuffle
-  for (let i = data.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [data[i], data[j]] = [data[j], data[i]];
-  }
+ // Fisher-Yates shuffle
+ for (let i = data.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [data[i], data[j]] = [data[j], data[i]];
+ }
 
-  // Ambil hanya 100 soal random
-  questions = data.slice(0, Math.min(100, data.length));
+ // Ambil hanya 100 soal random
+ questions = data.slice(0, Math.min(100, data.length));
 }
 
 function startQuiz() {
@@ -230,56 +226,59 @@ function nextQuestion() {
 }
 
 function submitAnswer() {
-  const answer = document.getElementById("answerInput").value.trim();
-  if (!answer) return;
-  const feedback = document.getElementById("feedback");
-  const q = questions[currentIndex];
+ const answer = document.getElementById("answerInput").value.trim();
+ if (!answer) return;
+ const feedback = document.getElementById("feedback");
+ const q = questions[currentIndex];
 
-  const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+ const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 
-  let correctAnswers = Array.isArray(q.indo)
-    ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
-    : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
+ let correctAnswers = Array.isArray(q.indo)
+  ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
+  : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
 
-  let isCorrect = correctAnswers.includes(normUser);
-  if (!isCorrect) {
-    isCorrect = correctAnswers.some(c => levenshtein(normUser, c) <= 3);
-  }
+ let isCorrect = correctAnswers.includes(normUser);
+ if (!isCorrect) {
+  isCorrect = correctAnswers.some(c => levenshtein(normUser, c) <= 3);
+ }
 
-  if (isCorrect) {
+ if (isCorrect) {
+  attemptCount = 0;
+  score++;
+  feedback.textContent = "Benar!";
+  feedback.className = "correct";
+
+  setTimeout(() => {
+   currentIndex++;
+   nextQuestion();
+  }, 800);
+ } else {
+  attemptCount++;
+  if (attemptCount >= 3) {
+   wrongList.push({
+    word: q.korea,
+    correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
+    your: answer
+   });
+   feedback.textContent = `Salah! → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
+   feedback.className = "wrong";
+
+   setTimeout(() => {
     attemptCount = 0;
-    score++;
-    feedback.textContent = "Benar!";
-    feedback.className = "correct";
-
-    setTimeout(() => {
-      currentIndex++;
-      nextQuestion();
-    }, 800);
+    currentIndex++;
+    nextQuestion();
+   }, 1500);
   } else {
-    attemptCount++;
-    if (attemptCount >= 3) {
-      wrongList.push({
-        word: q.korea,
-        correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
-        your: answer
-      });
-      feedback.textContent = `Salah! → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
-      feedback.className = "wrong";
-
-      setTimeout(() => {
-        attemptCount = 0;
-        currentIndex++;
-        nextQuestion();
-      }, 1500);
-    } else {
-      feedback.textContent = `Salah! (${attemptCount}/3)`;
-      feedback.className = "wrong";
-      document.getElementById("answerInput").value = "";
-      document.getElementById("answerInput").focus();
-    }
+   // Hanya tampilkan "Salah!" tanpa counter
+   feedback.textContent = "Salah!";
+   feedback.className = "wrong";
+   document.getElementById("answerInput").value = "";
+   document.getElementById("answerInput").focus();
   }
+ }
 }
+
+// Fungsi lainnya tetap sama (finishQuiz, restartQuiz, backToLogin, levenshtein, enter key)
 
 function finishQuiz() {
  clearInterval(timerInterval);
