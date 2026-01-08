@@ -1,54 +1,97 @@
+// === GANTI DENGAN NAMA SHEET KAMU ===
+const SHEET_NAME = "DATA"; // ubah kalau nama sheetmu beda, misal "Hasil Quiz"
+
+// Jangan ubah kode di bawah ini kalau tidak perlu
 function doPost(e) {
-  return handleRequest(e);
-}
-
-function doGet(e) {
-  return handleRequest(e);
-}
-
-function handleRequest(e) {
   try {
-    const SPREADSHEET_ID = "10rNccs5OzCfGa7Ohig0N2yQaG0LWYwY_-AJD_dMdg28";
-    const SHEET_NAME = "DATA";
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
-
-    let data = {};
-
-    if (e.parameter) {
-      // Prioritas GET dari quiz
-      data = {
-        username: e.parameter.username || "",
-        kodeSoal: e.parameter.kodeSoal || "",
-        jenisAplikasi: e.parameter.jenisAplikasi || "",
-        skor: Number(e.parameter.skor) || 0,
-        persentase: Number(e.parameter.persentase) || 0,
-        catatan: decodeURIComponent(e.parameter.catatan || "")
-      };
-    } else if (e.postData && e.postData.contents) {
-      // Kalau POST
+    let data;
+    
+    // Coba ambil dari POST JSON dulu
+    if (e.postData && e.postData.contents) {
       data = JSON.parse(e.postData.contents);
+    } else {
+      // Kalau gagal, fallback ke parameter GET
+      return handleGet(e);
     }
-
-    // Append baris baru
+    
+    const sheet = getSheet();
+    
+    // Tambah baris baru sesuai urutan kolom
     sheet.appendRow([
-      new Date(),
-      data.username,
-      data.kodeSoal,
-      data.jenisAplikasi,
-      data.skor,
-      data.persentase,
-      data.catatan
+      new Date(),                          // WAKTU (otomatis timestamp server)
+      data.namaSiswa || "Anonymous",       // NAMA SISWA
+      data.code || "Unknown",              // CODE
+      data.kosaKata || "",                 // KOSA KATA (misal: 45/50 (90%))
+      data.ubt || "-",                     // UBT (bisa diisi nanti)
+      data.latihanSoal || "",              // LATIHAN SOAL (jumlah soal)
+      data.keterangan || ""                // KETERANGAN (daftar salah atau "Semua benar!")
     ]);
-
-    // Return OK aja biar tab baru ga nunjukin data lama
+    
+    // Respon sukses ke quiz HTML
     return ContentService
-      .createTextOutput(JSON.stringify({ status: "OK", message: "Data berhasil disimpan!" }))
+      .createTextOutput(JSON.stringify({status: "success", message: "Data berhasil disimpan"}))
       .setMimeType(ContentService.MimeType.JSON);
-
-  } catch(err) {
+      
+  } catch (error) {
+    // Kalau ada error, kasih respon error
     return ContentService
-      .createTextOutput(JSON.stringify({ status: "ERROR", message: err.message }))
+      .createTextOutput(JSON.stringify({status: "error", message: error.toString()}))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// Support fallback kalau POST gagal (quiz akan buka tab baru dengan GET)
+function doGet(e) {
+  try {
+    const data = e.parameter;
+    
+    const sheet = getSheet();
+    
+    sheet.appendRow([
+      new Date(),
+      data.namaSiswa || "Anonymous",
+      data.code || "Unknown",
+      data.kosaKata || "",
+      data.ubt || "-",
+      data.latihanSoal || "",
+      data.keterangan || ""
+    ]);
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "success (GET fallback)", message: "Data disimpan via GET"}))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "error", message: error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Fungsi bantu buat ambil sheet
+function getSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  
+  // Kalau sheet belum ada, buat otomatis + header
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.appendRow([
+      "WAKTU",
+      "NAMA SISWA",
+      "CODE",
+      "KOSA KATA",
+      "UBT",
+      "LATIHAN SOAL",
+      "KETERANGAN"
+    ]);
+    // Format header biar bagus
+    const headerRange = sheet.getRange("A1:G1");
+    headerRange.setFontWeight("bold");
+    headerRange.setBackground("#10b981");
+    headerRange.setFontColor("white");
+    sheet.setFrozenRows(1);
+  }
+  
+  return sheet;
 }
