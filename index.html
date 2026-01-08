@@ -49,25 +49,6 @@ button {
 button:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(16,185,129,0.45); }
 button:active { transform: translateY(-1px); }
 
-/* Error message yang smart: hidden kalau kosong, muncul smooth kalau ada isi */
-.error {
- color: #ff6b6b;
- text-align: center;
- font-weight: 600;
- background: rgba(0,0,0,0.4);
- border-radius: 10px;
- margin: 12px 0;
- padding: 0;
- height: 0;
- overflow: hidden;
- transition: all 0.4s ease;
-}
-.error:not(:empty) {
- padding: 12px;
- height: auto;
- margin-bottom: 16px;
-}
-
 .hidden { display: none !important; }
 
 #timer { text-align: center; font-size: 32px; font-weight: bold; margin: 20px 0; padding: 14px; border-radius: 14px;
@@ -99,8 +80,6 @@ button:active { transform: translateY(-1px); }
  <input type="text" id="username" placeholder="Username / 이름" autocomplete="off">
  <input type="password" id="password" placeholder="Password / 비밀번호" autocomplete="off">
  <input type="text" id="kodeSoal" placeholder="Kode Test / 시험코드" autocomplete="off">
- 
- <div class="error" id="errorMsg"></div>
  <button onclick="login()">MULAI / 시작</button>
 </div>
 
@@ -174,7 +153,6 @@ const kodeMapping = {
  "chuseok": "soal16.json",
  "kimbap": "soal17.json",
  "saranghae": "soal3.json"
- // Tambahin lagi sesuai kebutuhan
 };
 
 let questions = [], currentIndex = 0, score = 0, wrongList = [], timerInterval, timeLeft = 3000;
@@ -185,37 +163,43 @@ function login() {
  username = document.getElementById("username").value.trim();
  const pass = document.getElementById("password").value.trim();
  kodeSoal = document.getElementById("kodeSoal").value.trim().toLowerCase();
- const error = document.getElementById("errorMsg");
- error.textContent = "";
 
- if (!username || !pass || !kodeSoal) { error.textContent = "Lengkapi semua kolom!"; return; }
+ if (!username || !pass || !kodeSoal) { 
+  alert("Lengkapi semua kolom!"); 
+  return; 
+ }
  const fileName = kodeMapping[kodeSoal];
- if (!fileName) { error.textContent = "Kode akses tidak valid!"; return; }
+ if (!fileName) { 
+  alert("Kode akses tidak valid!"); 
+  return; 
+ }
  const user = users.find(u => u.username === username && u.password === pass);
- if (!user) { error.textContent = "Username / Password salah!"; return; }
+ if (!user) { 
+  alert("Username / Password salah!"); 
+  return; 
+ }
 
  loadQuestions(fileName).then(() => {
- document.getElementById("loginPage").classList.add("hidden");
- document.getElementById("quizPage").classList.remove("hidden");
- startQuiz();
+  document.getElementById("loginPage").classList.add("hidden");
+  document.getElementById("quizPage").classList.remove("hidden");
+  startQuiz();
  }).catch(err => {
- error.textContent = "Gagal memuat soal: " + err.message;
- console.error(err);
+  alert("Gagal memuat soal: " + err.message);
+  console.error(err);
  });
 }
 
+// Semua fungsi lain tetap sama persis seperti sebelumnya
 async function loadQuestions(fileName) {
  const res = await fetch(fileName);
  if (!res.ok) throw new Error("File soal tidak ditemukan atau error jaringan");
  let data = await res.json();
 
- // Fisher-Yates shuffle
  for (let i = data.length - 1; i > 0; i--) {
- const j = Math.floor(Math.random() * (i + 1));
- [data[i], data[j]] = [data[j], data[i]];
+  const j = Math.floor(Math.random() * (i + 1));
+  [data[i], data[j]] = [data[j], data[i]];
  }
 
- // Ambil hanya 100 soal random
  questions = data.slice(0, Math.min(100, data.length));
 }
 
@@ -223,9 +207,9 @@ function startQuiz() {
  currentIndex = 0; score = 0; wrongList = []; timeLeft = 3000; attemptCount = 0;
  updateTimer(); updateQuestionNumber(); updateProgress();
  timerInterval = setInterval(() => {
- timeLeft--;
- updateTimer();
- if (timeLeft <= 0) finishQuiz();
+  timeLeft--;
+  updateTimer();
+  if (timeLeft <= 0) finishQuiz();
  }, 1000);
  nextQuestion();
 }
@@ -236,9 +220,9 @@ function updateTimer() {
  const timerEl = document.getElementById("timer");
  timerEl.textContent = `${m}:${s}`;
  if (timeLeft <= 300) {
- timerEl.classList.add("warning");
+  timerEl.classList.add("warning");
  } else {
- timerEl.classList.remove("warning");
+  timerEl.classList.remove("warning");
  }
 }
 
@@ -267,49 +251,46 @@ function submitAnswer() {
  const feedback = document.getElementById("feedback");
  const q = questions[currentIndex];
 
- // Normalize jawaban user
  const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 
- // Normalize semua jawaban benar
  let correctAnswers = Array.isArray(q.indo)
- ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
- : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
+  ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
+  : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
 
- // Exact match only
  let isCorrect = correctAnswers.includes(normUser);
 
  if (isCorrect) {
- attemptCount = 0;
- score++;
- feedback.textContent = "Benar!";
- feedback.className = "correct";
+  attemptCount = 0;
+  score++;
+  feedback.textContent = "Benar!";
+  feedback.className = "correct";
 
- setTimeout(() => {
- currentIndex++;
- nextQuestion();
- }, 800);
+  setTimeout(() => {
+   currentIndex++;
+   nextQuestion();
+  }, 800);
  } else {
- attemptCount++;
- if (attemptCount >= 3) {
- wrongList.push({
- word: q.korea,
- correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
- your: answer
- });
- feedback.textContent = `Salah! → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
- feedback.className = "wrong";
+  attemptCount++;
+  if (attemptCount >= 3) {
+   wrongList.push({
+    word: q.korea,
+    correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
+    your: answer
+   });
+   feedback.textContent = `Salah! → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
+   feedback.className = "wrong";
 
- setTimeout(() => {
- attemptCount = 0;
- currentIndex++;
- nextQuestion();
- }, 1500);
- } else {
- feedback.textContent = "Salah!";
- feedback.className = "wrong";
- document.getElementById("answerInput").value = "";
- document.getElementById("answerInput").focus();
- }
+   setTimeout(() => {
+    attemptCount = 0;
+    currentIndex++;
+    nextQuestion();
+   }, 1500);
+  } else {
+   feedback.textContent = "Salah!";
+   feedback.className = "wrong";
+   document.getElementById("answerInput").value = "";
+   document.getElementById("answerInput").focus();
+  }
  }
 }
 
@@ -326,41 +307,41 @@ function finishQuiz() {
  wrongDiv.innerHTML = "";
  let keterangan = "";
  if (wrongList.length > 0) {
- wrongDiv.classList.remove("hidden");
- wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br><br>";
- wrongList.forEach(i => {
- wrongDiv.innerHTML += `• <strong>${i.word}</strong> → ${i.correct} <br><small style="color:#78350f;">(jawaban kamu: ${i.your})</small><br><br>`;
- });
- keterangan = wrongList.map(i => `${i.word} → ${i.your} (benar: ${i.correct})`).join(" | ");
+  wrongDiv.classList.remove("hidden");
+  wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br><br>";
+  wrongList.forEach(i => {
+   wrongDiv.innerHTML += `• <strong>${i.word}</strong> → ${i.correct} <br><small style="color:#78350f;">(jawaban kamu: ${i.your})</small><br><br>`;
+  });
+  keterangan = wrongList.map(i => `${i.word} → ${i.your} (benar: ${i.correct})`).join(" | ");
  } else {
- keterangan = "Semua benar! Perfect!";
+  keterangan = "Semua benar! Perfect!";
  }
 
  const dataToSend = {
- waktu: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}),
- namaSiswa: username || "Anonymous",
- code: kodeSoal || "Unknown",
- kosaKata: `${score}/${totalQuestions} (${percent}%)`,
- ubt: "-",
- latihanSoal: totalQuestions,
- keterangan: keterangan
+  waktu: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}),
+  namaSiswa: username || "Anonymous",
+  code: kodeSoal || "Unknown",
+  kosaKata: `${score}/${totalQuestions} (${percent}%)`,
+  ubt: "-",
+  latihanSoal: totalQuestions,
+  keterangan: keterangan
  };
 
  fetch(SPREADSHEET_URL, {
- method: "POST",
- headers: { "Content-Type": "application/json" },
- body: JSON.stringify(dataToSend)
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(dataToSend)
  })
  .then(res => res.json())
  .then(data => {
- console.log("Success:", data);
- alert("✅ Skor berhasil dikirim ke Google Sheet!");
+  console.log("Success:", data);
+  alert("✅ Skor berhasil dikirim ke Google Sheet!");
  })
  .catch(err => {
- console.error("Error POST:", err);
- const params = new URLSearchParams(dataToSend);
- window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
- alert("⚠️ POST gagal, data dikirim via GET fallback.");
+  console.error("Error POST:", err);
+  const params = new URLSearchParams(dataToSend);
+  window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
+  alert("⚠️ POST gagal, data dikirim via GET fallback.");
  });
 }
 
@@ -376,7 +357,6 @@ function backToLogin() {
  document.getElementById("username").value = "";
  document.getElementById("password").value = "";
  document.getElementById("kodeSoal").value = "";
- document.getElementById("errorMsg").textContent = "";
 }
 
 document.getElementById("answerInput")?.addEventListener("keypress", e => {
