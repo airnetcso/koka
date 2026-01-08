@@ -264,7 +264,7 @@ function submitAnswer() {
         correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
         your: answer
       });
-      feedback.textContent = `Salah! (3x salah) → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
+      feedback.textContent = `Salah! → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
       feedback.className = "wrong";
 
       setTimeout(() => {
@@ -273,7 +273,7 @@ function submitAnswer() {
         nextQuestion();
       }, 1500);
     } else {
-      feedback.textContent = `Salah! Coba lagi (${attemptCount}/3)`;
+      feedback.textContent = `Salah! (${attemptCount}/3)`;
       feedback.className = "wrong";
       document.getElementById("answerInput").value = "";
       document.getElementById("answerInput").focus();
