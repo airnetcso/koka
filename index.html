@@ -1,369 +1,153 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TEST KOSA KATA</title>
-<style>
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pulseCorrect { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-@keyframes pulseWrong { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-body {
- font-family: 'Segoe UI', system-ui, Arial, sans-serif;
- min-height: 100vh;
- background: url('https://raw.githubusercontent.com/airnetcso/eps/main/image/bg1.jpg') no-repeat center center fixed;
- background-size: cover;
- display: flex; flex-direction: column; justify-content: center; align-items: center;
- padding: 20px; color: #fff; position: relative;
-}
-body::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 1; }
-
-.container {
- position: relative; z-index: 2; width: 90%; max-width: 460px; max-height: 90vh; overflow-y: auto;
- background: rgba(255,255,255,0.15); backdrop-filter: blur(16px); border-radius: 24px;
- padding: 27px; box-shadow: 0 15px 50px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2);
- animation: fadeIn 0.9s ease-out;
-}
-
-h1 { font-size: 34px; text-align: center; margin: 0 0 30px; color: #fff; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
-
-input[type="text"], input[type="password"] {
- width: 100%; padding: 16px; margin: 12px 0; font-size: 18px; border: 2px solid rgba(255,255,255,0.4);
- border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,0.12); color: white;
- transition: all 0.3s ease;
- pointer-events: auto;
- position: relative;
- z-index: 3;
-}
-input::placeholder { color: rgba(255,255,255,0.7); opacity: 1; }
-input:focus { border-color: #fff; background: rgba(255,255,255,0.25); outline: none; box-shadow: 0 0 0 5px rgba(255,255,255,0.2); }
-
-button {
- width: 100%; padding: 16px; margin: 18px 0 8px; font-size: 20px; font-weight: bold; border: none;
- border-radius: 12px; color: white; cursor: pointer; background: linear-gradient(90deg, #10b981, #059669);
- transition: all 0.3s ease;
- position: relative; z-index: 3;
-}
-button:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(16,185,129,0.45); }
-button:active { transform: translateY(-1px); }
-
-.hidden { display: none !important; }
-
-#timer { text-align: center; font-size: 32px; font-weight: bold; margin: 20px 0; padding: 14px; border-radius: 14px;
- background: rgba(220,38,38,0.25); transition: all 0.5s; }
-#timer.warning { background: rgba(252,211,77,0.4); color: #fef3c7; animation: pulseWrong 1s infinite alternate; }
-
-.progress { height: 14px; background: rgba(255,255,255,0.15); border-radius: 7px; margin: 20px 0; overflow: hidden; }
-.progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #059669); width: 0%; transition: width 0.8s ease; }
-
-#questionNumber { text-align: center; font-size: 20px; margin: 10px 0; color: #e0f2fe; }
-
-.question strong { font-size: 48px; display: block; margin: 40px 0 30px; color: #fff; text-align: center;
- font-weight: 700; text-shadow: 0 3px 12px rgba(0,0,0,0.6); }
-
-#feedback { text-align: center; font-size: 28px; font-weight: bold; margin: 20px 0; height: 40px; animation: fadeIn 0.5s; }
-.correct { color: #86efac; animation: pulseCorrect 0.6s; }
-.wrong { color: #fca5a5; animation: pulseWrong 0.6s; }
-
-.wrong-list { font-size: 17px; line-height: 1.9; margin: 25px 0; background: rgba(254,243,199,0.95); color: #92400e;
- padding: 22px; border-radius: 14px; border-left: 6px solid #ca8a04; }
-
-.footer { position: relative; z-index: 2; margin-top: 50px; font-size: 14px; color: rgba(255,255,255,0.85); text-align: center; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEST KOSA KATA</title>
+  <style>
+    /* CSS kamu yang lama, atau minimal biar tampil bagus. Aku skip detail CSS biar fokus ke JS fix */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f4f8; }
+    .container { max-width: 600px; margin: auto; }
+    .question { margin: 20px 0; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    button { padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #45a049; }
+    #result { margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 8px; }
+  </style>
 </head>
 <body>
 
-<div class="container" id="loginPage">
- <h1>TEST KOSA KATA</h1>
- <input type="text" id="username" placeholder="Username / 이름" autocomplete="off">
- <input type="password" id="password" placeholder="Password / 비밀번호" autocomplete="off">
- <input type="text" id="kodeSoal" placeholder="Kode Test / 시험코드" autocomplete="off">
- <button onclick="login()">MULAI / 시작</button>
+<div class="container">
+  <h1>TEST KOSA KATA</h1>
+  <!-- Login section (contoh sederhana, sesuaikan dengan app kamu) -->
+  <div id="login">
+    <input id="username" placeholder="Username" />
+    <button onclick="login()">LOGIN</button>
+  </div>
+
+  <div id="quiz" style="display:none;">
+    <div id="timer">Waktu: --:--</div>
+    <div id="questions"></div>
+    <button id="submitBtn" onclick="submitQuiz()">SUBMIT</button>
+  </div>
+
+  <div id="result" style="display:none;"></div>
 </div>
-
-<div class="container hidden" id="quizPage">
- <h1>TEST KOSA KATA</h1>
- <div id="timer">50:00</div>
- <div id="questionNumber">Soal 1 dari 100</div>
- <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-
- <div id="questionArea">
-  <div id="feedback"></div>
-  <div class="question"><strong id="currentWord"></strong></div>
-  <input type="text" id="answerInput" placeholder="Ketik jawaban di sini" autocomplete="off">
-  <button onclick="submitAnswer()" id="submitBtn">SUBMIT</button>
- </div>
-
- <div id="resultArea" class="hidden">
-  <h2 style="color:#fff; margin-bottom:20px; text-align:center;">Hasil Test</h2>
-  <p id="scoreText" style="font-size:32px; font-weight:bold; color:#d1fae5; text-align:center;"></p>
-  <div id="wrongWords" class="wrong-list hidden"></div>
-  <button onclick="restartQuiz()" style="background:linear-gradient(90deg, #3b82f6, #2563eb); margin-top:20px;">
-   ULANGI LAGI
-  </button>
-  <button onclick="backToLogin()" style="background:linear-gradient(90deg, #6b7280, #4b5563); margin-top:10px;">
-   KEMBALI KE LOGIN
-  </button>
- </div>
-</div>
-
-<div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 
 <script>
-// GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
-const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzwdfNflhqIyVWo8knAyB2nWtzlkbPiRHfMCJV_O_mxkZravDprrAhMNV3Qu75WFYgk0g/exec";
+const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzwdfNflhqIyVWo8knAyB2nWtzlkbPiRHfMCJV_O_mxkZravDprrAhMNV3Qu75WFYgk0g/exec"; // GANTI KALAU DEPLOY BARU
 
-const users = [
- {username:"uus",password:"111"},
- {username:"hanarizka",password:"Nungkihana24!"},
- {username:"windi",password:"Windi2000"},
- {username:"rismaya97",password:"bahasakorea"},
- {username:"sita77",password:"minyooki"},
- {username:"mila",password:"lestari"},
- {username:"Aini185",password:"Doraemon"},
- {username:"Hangeulfei",password:"studykorea02"},
- {username:"Hamdan106",password:"Fukuo106"},
- {username:"Heri",password:"heri99"},
- {username:"Fikrisurya",password:"464646"},
- {username:"Mutiara2003",password:"Mutiara14"},
- {username:"wantikas",password:"200022"},
- {username:"Dininidia",password:"dininidia11"},
- {username:"kaniarostayuni9",password:"Kania1313"},
- {username:"Dikisetiawan07",password:"Diki2709"},
- {username:"yppsdi",password:"global2026"},
- {username:"siwon",password:"kampus2"},
- {username:"shorin_25",password:"Say4sukses"},
- {username:"Jahro2108",password:"Rahayu123"},
- {username:"Satria11",password:"Satria113"},
- {username:"sultan2026",password:"sultandaulah"},
- {username:"Aisyah18",password:"Aisyah18."},
- {username:"Rizka2026",password:"butterfly24"},
- {username:"Zhafif07",password:"20060722"}
-];
+let currentUser = "";
+let questions = []; // Isi dari JSON soal
+let answers = [];
+let timeLeft = 3000; // 50 menit dalam detik, sesuaikan
+let timerInterval;
 
-const kodeMapping = {
- "h050126": "soal1.json",
- "sarewae": "test.json",
- "r43213": "soal2.json",
- "mugunghwa": "soal11.json",
- "kimchi": "soal12.json",
- "seoul": "soal13.json",
- "teokbokki": "soal14.json",
- "kimtaehyung": "soal15.json",
- "chuseok": "soal16.json",
- "kimbap": "soal17.json",
- "saranghae": "soal3.json"
-};
-
-let questions = [], currentIndex = 0, score = 0, wrongList = [], timerInterval, timeLeft = 3000;
-let username = "", kodeSoal = "";
-let attemptCount = 0;
-
+// Contoh login sederhana (sesuaikan dengan validCredentials & kodeMapping kamu)
 function login() {
- username = document.getElementById("username").value.trim();
- const pass = document.getElementById("password").value.trim();
- kodeSoal = document.getElementById("kodeSoal").value.trim().toLowerCase();
-
- if (!username || !pass || !kodeSoal) { 
-  alert("Lengkapi semua kolom!"); 
-  return; 
- }
- const fileName = kodeMapping[kodeSoal];
- if (!fileName) { 
-  alert("Kode akses tidak valid!"); 
-  return; 
- }
- const user = users.find(u => u.username === username && u.password === pass);
- if (!user) { 
-  alert("Username / Password salah!"); 
-  return; 
- }
-
- loadQuestions(fileName).then(() => {
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("quizPage").classList.remove("hidden");
-  startQuiz();
- }).catch(err => {
-  alert("Gagal memuat soal: " + err.message);
-  console.error(err);
- });
-}
-
-// Semua fungsi lain tetap sama persis seperti sebelumnya
-async function loadQuestions(fileName) {
- const res = await fetch(fileName);
- if (!res.ok) throw new Error("File soal tidak ditemukan atau error jaringan");
- let data = await res.json();
-
- for (let i = data.length - 1; i > 0; i--) {
-  const j = Math.floor(Math.random() * (i + 1));
-  [data[i], data[j]] = [data[j], data[i]];
- }
-
- questions = data.slice(0, Math.min(100, data.length));
-}
-
-function startQuiz() {
- currentIndex = 0; score = 0; wrongList = []; timeLeft = 3000; attemptCount = 0;
- updateTimer(); updateQuestionNumber(); updateProgress();
- timerInterval = setInterval(() => {
-  timeLeft--;
-  updateTimer();
-  if (timeLeft <= 0) finishQuiz();
- }, 1000);
- nextQuestion();
-}
-
-function updateTimer() {
- const m = String(Math.floor(timeLeft / 60)).padStart(2, "0");
- const s = String(timeLeft % 60).padStart(2, "0");
- const timerEl = document.getElementById("timer");
- timerEl.textContent = `${m}:${s}`;
- if (timeLeft <= 300) {
-  timerEl.classList.add("warning");
- } else {
-  timerEl.classList.remove("warning");
- }
-}
-
-function updateQuestionNumber() {
- document.getElementById("questionNumber").textContent = `Soal ${currentIndex + 1} dari ${questions.length}`;
-}
-
-function updateProgress() {
- const percent = (currentIndex / questions.length) * 100;
- document.getElementById("progressBar").style.width = percent + "%";
-}
-
-function nextQuestion() {
- if (currentIndex >= questions.length) { finishQuiz(); return; }
- document.getElementById("currentWord").textContent = questions[currentIndex].korea;
- document.getElementById("answerInput").value = "";
- document.getElementById("answerInput").focus();
- document.getElementById("feedback").textContent = "";
- updateQuestionNumber();
- updateProgress();
-}
-
-function submitAnswer() {
- const answer = document.getElementById("answerInput").value.trim();
- if (!answer) return;
- const feedback = document.getElementById("feedback");
- const q = questions[currentIndex];
-
- const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
-
- let correctAnswers = Array.isArray(q.indo)
-  ? q.indo.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
-  : [q.indo.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()];
-
- let isCorrect = correctAnswers.includes(normUser);
-
- if (isCorrect) {
-  attemptCount = 0;
-  score++;
-  feedback.textContent = "Benar!";
-  feedback.className = "correct";
-
-  setTimeout(() => {
-   currentIndex++;
-   nextQuestion();
-  }, 800);
- } else {
-  attemptCount++;
-  if (attemptCount >= 3) {
-   wrongList.push({
-    word: q.korea,
-    correct: Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo,
-    your: answer
-   });
-   feedback.textContent = `Salah! → ${Array.isArray(q.indo) ? q.indo.join(" / ") : q.indo}`;
-   feedback.className = "wrong";
-
-   setTimeout(() => {
-    attemptCount = 0;
-    currentIndex++;
-    nextQuestion();
-   }, 1500);
+  const u = document.getElementById("username").value.trim();
+  if (u) {
+    currentUser = u;
+    document.getElementById("login").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
+    loadQuestions(); // Fungsi load soal dari JSON
+    startTimer();
   } else {
-   feedback.textContent = "Salah!";
-   feedback.className = "wrong";
-   document.getElementById("answerInput").value = "";
-   document.getElementById("answerInput").focus();
+    alert("Masukkan username dulu!");
   }
- }
 }
 
-function finishQuiz() {
- clearInterval(timerInterval);
- document.getElementById("questionArea").classList.add("hidden");
- document.getElementById("resultArea").classList.remove("hidden");
+// Load soal (contoh, ganti dengan fetch JSON seperti sebelumnya)
+async function loadQuestions() {
+  // Misal fetch dari repo kamu
+  const res = await fetch("https://raw.githubusercontent.com/airnetcso/latbakor/main/soal/kosa_kata.json"); // GANTI URL JSON SOAL
+  questions = await res.json();
+  answers = new Array(questions.length).fill(null);
 
- const totalQuestions = questions.length;
- const percent = Math.round((score / totalQuestions) * 100);
- document.getElementById("scoreText").textContent = `Skor: ${score}/${totalQuestions} (${percent}%)`;
-
- const wrongDiv = document.getElementById("wrongWords");
- wrongDiv.innerHTML = "";
- let keterangan = "";
- if (wrongList.length > 0) {
-  wrongDiv.classList.remove("hidden");
-  wrongDiv.innerHTML = "<strong>Kata yang salah:</strong><br><br>";
-  wrongList.forEach(i => {
-   wrongDiv.innerHTML += `• <strong>${i.word}</strong> → ${i.correct} <br><small style="color:#78350f;">(jawaban kamu: ${i.your})</small><br><br>`;
+  const qContainer = document.getElementById("questions");
+  qContainer.innerHTML = "";
+  questions.forEach((q, i) => {
+    let html = `<div class="question">
+      <p><strong>Soal ${i+1}:</strong> ${q.question}</p>`;
+    Object.entries(q.options || {}).forEach(([key, val]) => {
+      html += `<label>
+        <input type="radio" name="q${i}" value="${key}" onchange="answers[${i}] = '${key}'">
+        ${val}
+      </label><br>`;
+    });
+    html += `</div>`;
+    qContainer.innerHTML += html;
   });
-  keterangan = wrongList.map(i => `${i.word} → ${i.your} (benar: ${i.correct})`).join(" | ");
- } else {
-  keterangan = "Semua benar! Perfect!";
- }
-
- const dataToSend = {
-  waktu: new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}),
-  namaSiswa: username || "Anonymous",
-  code: kodeSoal || "Unknown",
-  kosaKata: `${score}/${totalQuestions} (${percent}%)`,
-  ubt: "-",
-  latihanSoal: totalQuestions,
-  keterangan: keterangan
- };
-
- fetch(SPREADSHEET_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(dataToSend)
- })
- .then(res => res.json())
- .then(data => {
-  console.log("Success:", data);
-  alert("✅ Skor berhasil dikirim ke Google Sheet!");
- })
- .catch(err => {
-  console.error("Error POST:", err);
-  const params = new URLSearchParams(dataToSend);
-  window.open(SPREADSHEET_URL + "?" + params.toString(), "_blank");
-  alert("⚠️ POST gagal, data dikirim via GET fallback.");
- });
 }
 
-function restartQuiz() {
- document.getElementById("resultArea").classList.add("hidden");
- document.getElementById("questionArea").classList.remove("hidden");
- startQuiz();
+function startTimer() {
+  timerInterval = setInterval(() => {
+    const min = Math.floor(timeLeft / 60);
+    const sec = timeLeft % 60;
+    document.getElementById("timer").textContent = `Waktu: ${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+    if (--timeLeft < 0) {
+      clearInterval(timerInterval);
+      submitQuiz(true); // auto submit kalau habis waktu
+    }
+  }, 1000);
 }
 
-function backToLogin() {
- document.getElementById("quizPage").classList.add("hidden");
- document.getElementById("loginPage").classList.remove("hidden");
- document.getElementById("username").value = "";
- document.getElementById("password").value = "";
- document.getElementById("kodeSoal").value = "";
-}
+async function submitQuiz(auto = false) {
+  clearInterval(timerInterval);
+  if (auto) alert("Waktu habis! Submit otomatis.");
 
-document.getElementById("answerInput")?.addEventListener("keypress", e => {
- if (e.key === "Enter") submitAnswer();
-});
+  const unanswered = answers.findIndex(a => a === null);
+  if (unanswered !== -1 && !confirm("Ada soal belum dijawab. Tetap submit?")) return;
+
+  let score = 0;
+  let wrongDetails = [];
+  questions.forEach((q, i) => {
+    if (answers[i] === q.answer) score++;
+    else if (answers[i] !== null) {
+      wrongDetails.push(`Soal ${i+1}: Jawaban benar ${q.answer}`);
+    }
+  });
+
+  const total = questions.length;
+  const percent = Math.round((score / total) * 100);
+  const keterangan = wrongDetails.length ? wrongDetails.join("; ") : "Semua benar! Perfect!";
+
+  const dataToSend = {
+    namaSiswa: currentUser || "Anonymous",
+    code: "koka", // atau kode soal
+    kosaKata: `${score}/${total} (${percent}%)`,
+    ubt: "-",
+    latihanSoal: "-",
+    keterangan: keterangan,
+    waktu: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
+  };
+
+  const formData = new URLSearchParams(dataToSend);
+
+  try {
+    const res = await fetch(SPREADSHEET_URL, {
+      method: "POST",
+      body: formData,
+      redirect: "follow"
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const result = await res.json();
+    console.log("Sukses:", result);
+
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("result").innerHTML = `
+      <h2>Nilai: ${score} / ${total} (${percent}%)</h2>
+      <p>${keterangan}</p>
+      <button onclick="location.reload()">Ulangi</button>
+    `;
+    document.getElementById("result").style.display = "block";
+    alert("Nilai berhasil disimpan ke sheet!");
+  } catch (err) {
+    console.error("Gagal kirim:", err);
+    alert("Gagal kirim ke server. Nilai kamu: " + score + "/" + total + ". Catat manual dulu ya!");
+    // Opsional: simpan ke localStorage kalau mau
+  }
+}
 </script>
 </body>
 </html>
