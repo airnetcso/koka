@@ -1,97 +1,108 @@
-// === GANTI DENGAN NAMA SHEET KAMU ===
-const SHEET_NAME = "DATA"; // ubah kalau nama sheetmu beda, misal "Hasil Quiz"
+// === KONFIGURASI ===
+const SHEET_NAME = "DATA"; // Nama sheet di Spreadsheet (bisa diganti)
 
-// Jangan ubah kode di bawah ini kalau tidak perlu
-function doPost(e) {
-  try {
-    let data;
-    
-    // Coba ambil dari POST JSON dulu
-    if (e.postData && e.postData.contents) {
-      data = JSON.parse(e.postData.contents);
-    } else {
-      // Kalau gagal, fallback ke parameter GET
-      return handleGet(e);
-    }
-    
-    const sheet = getSheet();
-    
-    // Tambah baris baru sesuai urutan kolom
-    sheet.appendRow([
-      new Date(),                          // WAKTU (otomatis timestamp server)
-      data.namaSiswa || "Anonymous",       // NAMA SISWA
-      data.code || "Unknown",              // CODE
-      data.kosaKata || "",                 // KOSA KATA (misal: 45/50 (90%))
-      data.ubt || "-",                     // UBT (bisa diisi nanti)
-      data.latihanSoal || "",              // LATIHAN SOAL (jumlah soal)
-      data.keterangan || ""                // KETERANGAN (daftar salah atau "Semua benar!")
-    ]);
-    
-    // Respon sukses ke quiz HTML
-    return ContentService
-      .createTextOutput(JSON.stringify({status: "success", message: "Data berhasil disimpan"}))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    // Kalau ada error, kasih respon error
-    return ContentService
-      .createTextOutput(JSON.stringify({status: "error", message: error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-// Support fallback kalau POST gagal (quiz akan buka tab baru dengan GET)
+// === DO GET (utama untuk GET query string dari app) ===
 function doGet(e) {
   try {
-    const data = e.parameter;
-    
+    Logger.log("doGet dipanggil | Parameter lengkap: " + JSON.stringify(e.parameter || {}));
+
+    let data = e.parameter || {};
+
+    if (Object.keys(data).length === 0) {
+      Logger.log("WARNING: e.parameter kosong!");
+      throw new Error("Tidak ada data parameter yang diterima");
+    }
+
     const sheet = getSheet();
-    
+
     sheet.appendRow([
-      new Date(),
-      data.namaSiswa || "Anonymous",
-      data.code || "Unknown",
-      data.kosaKata || "",
-      data.ubt || "-",
-      data.latihanSoal || "",
-      data.keterangan || ""
+      new Date(),                          // A: WAKTU (server timestamp)
+      data.n || "Anonymous",               // B: NAMA SISWA
+      data.c || "Unknown",                 // C: CODE
+      data.k || "-",                       // D: KOSA KATA
+      data.u || "-",                       // E: UBT
+      data.l || "-",                       // F: LATIHAN SOAL
+      data.t || ""                         // G: KETERANGAN
     ]);
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({status: "success (GET fallback)", message: "Data disimpan via GET"}))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({status: "error", message: error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
+
+    Logger.log("SUKSES APPEND: " + JSON.stringify(data));
+
+    return ContentService.createTextOutput("OK - Data masuk sheet")
+      .setMimeType(ContentService.MimeType.TEXT);
+
+  } catch (err) {
+    Logger.log("ERROR di doGet: " + err.message + " | Stack: " + err.stack);
+    return ContentService.createTextOutput("Error: " + err.message)
+      .setMimeType(ContentService.MimeType.TEXT);
   }
 }
 
-// Fungsi bantu buat ambil sheet
+// === DO POST (fallback kalau ada app yang masih pakai POST) ===
+function doPost(e) {
+  try {
+    Logger.log("doPost dipanggil | Event keys: " + Object.keys(e || {}));
+
+    let data = {};
+
+    // Prioritas 1: form-urlencoded
+    if (e.parameter && Object.keys(e.parameter).length > 0) {
+      data = e.parameter;
+      Logger.log("SUKSES dari e.parameter (form-urlencoded): " + JSON.stringify(data));
+    }
+    // Prioritas 2: JSON
+    else if (e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+        Logger.log("SUKSES dari JSON: " + JSON.stringify(data));
+      } catch (parseErr) {
+        Logger.log("JSON parse gagal: " + parseErr + " | Raw: " + e.postData.contents);
+        throw new Error("Invalid JSON");
+      }
+    } else {
+      throw new Error("Tidak ada data valid");
+    }
+
+    const sheet = getSheet();
+    sheet.appendRow([
+      new Date(),
+      data.n || data.namaSiswa || "Anonymous",
+      data.c || data.code || "Unknown",
+      data.k || data.kosaKata || "-",
+      data.u || data.ubt || "-",
+      data.l || data.latihanSoal || "-",
+      data.t || data.keterangan || ""
+    ]);
+
+    Logger.log("SUKSES APPEND dari POST: " + JSON.stringify(data));
+
+    return ContentService.createTextOutput("OK - Data masuk sheet")
+      .setMimeType(ContentService.MimeType.TEXT);
+
+  } catch (err) {
+    Logger.log("ERROR di doPost: " + err.message);
+    return ContentService.createTextOutput("Error: " + err.message)
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+// === FUNGSI BANTU SHEET ===
 function getSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(SHEET_NAME);
-  
-  // Kalau sheet belum ada, buat otomatis + header
+
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
     sheet.appendRow([
-      "WAKTU",
-      "NAMA SISWA",
-      "CODE",
-      "KOSA KATA",
-      "UBT",
-      "LATIHAN SOAL",
-      "KETERANGAN"
+      "WAKTU", "NAMA SISWA", "CODE", "KOSA KATA", "UBT", "LATIHAN SOAL", "KETERANGAN"
     ]);
-    // Format header biar bagus
-    const headerRange = sheet.getRange("A1:G1");
-    headerRange.setFontWeight("bold");
-    headerRange.setBackground("#10b981");
-    headerRange.setFontColor("white");
+
+    const header = sheet.getRange("A1:G1");
+    header.setFontWeight("bold");
+    header.setBackground("#10b981");
+    header.setFontColor("white");
     sheet.setFrozenRows(1);
+    sheet.autoResizeColumns(1, 7);
   }
-  
+
   return sheet;
 }
