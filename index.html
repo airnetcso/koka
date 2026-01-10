@@ -101,7 +101,7 @@ button:active { transform: translateY(-1px); }
 </div>
 <div class="footer">© 2026 Denzuka - Kim Jongun. All rights reserved.</div>
 <script>
-// GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
+// URL Google Sheet (WA baru yang kamu kasih)
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbxapcWi7Oegep2wwVADsdJLI8Fyumg30U-9hPpG88qtpVgIduEbwo6LYslkbEcpfqwewg/exec";
 
 const users = [
@@ -306,17 +306,19 @@ function finishQuiz() {
  fetch(SPREADSHEET_URL, {
   method: "POST",
   mode: "no-cors",
+  keepalive: true,
   body: formData,
   redirect: "follow"
  })
  .then(() => {
-  console.log("Submit sukses via POST form-urlencoded");
+  console.log("✅ Skor dikirim sukses via POST (no-cors)");
  })
  .catch(err => {
   console.error("Gagal POST:", err);
+  // HAPUS fallback window.open biar nggak double Anonymous
  });
 
- // Optional beacon fallback kalau POST drop
+ // Optional beacon fallback kalau POST drop (tapi nggak perlu kalau POST works)
  const beaconUrl = SPREADSHEET_URL + "?" + formData.toString() + "&_=" + Date.now();
  const img = new Image();
  img.src = beaconUrl;
