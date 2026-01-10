@@ -179,7 +179,7 @@ async function loadQuestions(fileName) {
   [data[i], data[j]] = [data[j], data[i]];
  }
  // Ambil hanya 100 soal random
- questions = data.slice(0, Math.min(100, data.length));
+ questions = data.slice(0, Math.min(50, data.length));
 }
 
 function startQuiz() {
@@ -275,7 +275,7 @@ function finishQuiz() {
  document.getElementById("questionArea").classList.add("hidden");
  document.getElementById("resultArea").classList.remove("hidden");
  const totalQuestions = questions.length;
- const percent = Math.round((score / totalQuestions) * 100);
+ const percent = Math.round((score / totalQuestions) * 50);
  document.getElementById("scoreText").textContent = `Skor: ${score}/${totalQuestions} (${percent}%)`;
  const wrongDiv = document.getElementById("wrongWords");
  wrongDiv.innerHTML = "";
