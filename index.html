@@ -315,13 +315,13 @@ function finishQuiz() {
  })
  .catch(err => {
   console.error("Gagal POST:", err);
-  // HAPUS fallback window.open biar nggak double Anonymous
+  // Tidak ada fallback window.open lagi → nggak double Anonymous
  });
 
- // Optional beacon fallback kalau POST drop (tapi nggak perlu kalau POST works)
- const beaconUrl = SPREADSHEET_URL + "?" + formData.toString() + "&_=" + Date.now();
- const img = new Image();
- img.src = beaconUrl;
+ // Hapus beacon fallback karena POST sudah works
+ // const beaconUrl = SPREADSHEET_URL + "?" + formData.toString() + "&_=" + Date.now();
+ // const img = new Image();
+ // img.src = beaconUrl;
 }
 
 function restartQuiz() {
