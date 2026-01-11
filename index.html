@@ -181,7 +181,7 @@ async function loadQuestions(fileName) {
   [data[i], data[j]] = [data[j], data[i]];
  }
  // Ambil hanya 100 soal random
- questions = data.slice(0, Math.min(50, data.length));
+ questions = data.slice(0, Math.min(100, data.length));
 }
 
 function startQuiz() {
