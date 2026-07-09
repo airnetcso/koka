@@ -326,17 +326,20 @@ body::before {
 // URL Google Sheet
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzxyVIlsyLswlfnQG618eeUZgN83dd2jfCjU0r7LsNHM3A6NNiibuCIb5e3CNs9J1vVhQ/exec";
 
-// Data user tanpa password
-const users = [
- {username:"uus"}, {username:"hanarizka"}, {username:"windi"}, {username:"rismaya97"},
- {username:"sita77"}, {username:"mila"}, {username:"Aini185"}, {username:"Hangeulfei"},
- {username:"Hamdan106"}, {username:"Heri"}, {username:"Fikrisurya"}, {username:"Mutiara2003"},
- {username:"wantikas"}, {username:"Dininidia"}, {username:"kaniarostayuni9"}, {username:"Dikisetiawan07"},
- {username:"Aisyah18"}, {username:"Rizka2026"}, {username:"dinda"}, {username:"Zhafif07"},
- {username:"siwon"}, {username:"Azizah27_"}, {username:"yppsdi"}, {username:"Satria11"},
- {username:"sultan2026"}
-];
-
+<script>
+    // Data user dari file index(3) aslimu (tanpa field password)
+    const users = [
+      {username:"uus2000"}, {username:"windi"}, {username:"rismaya97"},
+      {username:"sita77"}, {username:"Aini185"}, {username:"Hangeulfei"},
+      {username:"Hamdan106"}, {username:"Heri"}, {username:"hanarizka"},
+      {username:"Fikrisurya"}, {username:"Mutiara2003"}, {username:"dinda"},
+      {username:"wantikas"}, {username:"Dininidia"}, {username:"kaniarostayuni9"},
+      {username:"Dikisetiawan07"}, {username:"Aisyah18"}, {username:"Rizka2026"},
+      {username:"Zhafif07"}, {username:"siwon"}, {username:"Satria11"},
+      {username:"sultan2026"}, {username:"yppsdi"}, {username:"Azizah27_"},
+      {username:"mila"},
+      {username:"admin", role:"admin"} // Tambahan contoh admin
+    ];
 const kodeMapping = {
  "h050126": "soal1.json", "sarewae": "test.json", "r43213": "soal2.json",
  "mugunghwa": "soal11.json", "kimchi": "soal12.json", "seoul": "soal13.json",
