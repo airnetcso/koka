@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TEST KOSA KATA</title>
 <style>
+/* =========================================
+   GLOBAL & BACKGROUND STYLES
+   ========================================= */
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -23,6 +26,9 @@ body::before {
   z-index: 0;
 }
 
+/* =========================================
+   LOGIN PAGE STYLES
+   ========================================= */
 #login-page {
   min-height: 100vh;
   display: flex;
@@ -128,6 +134,9 @@ body::before {
   text-align: center;
 }
 
+/* =========================================
+   CUSTOM DIALOG MODAL
+   ========================================= */
 #custom-dialog {
   display: none;
   position: fixed;
@@ -180,6 +189,9 @@ body::before {
 .btn-primary { background: #10b981; color: white; }
 .btn-secondary { background: #444; color: white; }
 
+/* =========================================
+   QUIZ PAGE STYLES
+   ========================================= */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulseCorrect { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 @keyframes pulseWrong { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -289,7 +301,7 @@ body::before {
 
     <input id="username" type="text" placeholder="Username / 이름" autocomplete="off" autofocus>
     
-    <!-- dropdown hanya menampilkan nama Test secara urut & bersih -->
+    <!-- Dropdown hanya menampilkan kode Test yang sinkron dengan kodeMapping -->
     <select id="kodeSoal">
       <option value="" disabled selected>-- Pilih Kode Test --</option>
       <option value="Test 01">Test 01</option>
@@ -340,10 +352,10 @@ body::before {
 </div>
 
 <script>
-// URL Google Sheet
+// URL Google Sheet untuk pengiriman nilai otomatis
 const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzxyVIlsyLswlfnQG618eeUZgN83dd2jfCjU0r7LsNHM3A6NNiibuCIb5e3CNs9J1vVhQ/exec";
 
-// Data user valid (tanpa password)
+// Data user valid
 const users = [
   {username:"uus2000"}, {username:"windi"}, {username:"rismaya97"},
   {username:"sita77"}, {username:"Aini185"}, {username:"Hangeulfei"},
@@ -357,19 +369,19 @@ const users = [
   {username:"admin", role:"admin"}
 ];
 
-// Pemetaan dropdown langsung ke nama berkas JSON Anda yang tersimpan di Repo
+// Pemetaan dropdown langsung ke nama berkas JSON di repositori 'koka' Anda
 const kodeMapping = {
   "Test 01": "soal1.json",
-  "Test 02": "test.json",
-  "Test 03": "soal2.json",
-  "Test 04": "soal3.json",
-  "Test 05": "soal11.json",
-  "Test 06": "soal12.json",
-  "Test 07": "soal13.json",
-  "Test 08": "soal14.json",
-  "Test 09": "soal15.json",
-  "Test 10": "soal16.json",
-  "Test 11": "soal17.json"
+  "Test 02": "soal2.json",
+  "Test 03": "soal3.json",
+  "Test 04": "soal4.json",
+  "Test 05": "soal5.json",
+  "Test 06": "soal6.json",
+  "Test 07": "soal7.json",
+  "Test 08": "soal8.json",
+  "Test 09": "soal9.json",
+  "Test 10": "soal10.json",
+  "Test 11": "soal11.json"
 };
 
 let questions = [], currentIndex = 0, score = 0, wrongList = [], timerInterval, timeLeft = 3000;
@@ -423,15 +435,14 @@ function login() {
     return; 
   }
   
-  // Memeriksa username secara case-insensitive (mengabaikan huruf besar/kecil)
+  // Memeriksa username secara case-insensitive
   const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
   if (!user) { 
     showCustomAlert("Username tidak terdaftar!"); 
     return; 
   }
   
-  // Menggunakan nama yang terdaftar di sistem agar casing-nya rapi
-  username = user.username;
+  username = user.username; // Gunakan casing asli dari sistem
 
   showLoading(true, "Mengunduh soal test...");
   
@@ -450,7 +461,8 @@ function login() {
 document.getElementById("btnLogin").onclick = login;
 
 async function loadQuestions(fileName) {
-  const BASE = "https://raw.githubusercontent.com/airnetcso/latbakor/main/soal/";
+  // BASE URL sekarang mengarah ke repositori koka sesuai petunjuk Anda
+  const BASE = "https://raw.githubusercontent.com/airnetcso/koka/main/";
   const res = await fetch(BASE + fileName);
   if (!res.ok) throw new Error("File soal tidak ditemukan");
   let data = await res.json();
@@ -467,7 +479,6 @@ async function loadQuestions(fileName) {
 function startQuiz() {
   currentIndex = 0; score = 0; wrongList = []; timeLeft = 3000; attemptCount = 0;
   
-  // Ambil state kuis agar tampil awal dengan benar
   document.getElementById("questionArea").classList.remove("hidden");
   document.getElementById("resultArea").classList.add("hidden");
   
@@ -513,7 +524,10 @@ function nextQuestion() {
     finishQuiz(); 
     return; 
   }
-  document.getElementById("currentWord").textContent = questions[currentIndex].korea || questions[currentIndex].question;
+  
+  // Handshake fleksibel jika JSON menggunakan 'korea' atau 'question'
+  const currentQ = questions[currentIndex];
+  document.getElementById("currentWord").textContent = currentQ.korea || currentQ.question || "";
   document.getElementById("answerInput").value = "";
   document.getElementById("answerInput").focus();
   document.getElementById("feedback").textContent = "";
@@ -528,7 +542,7 @@ function submitAnswer() {
   const q = questions[currentIndex];
   const normUser = answer.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
   
-  // Mendapatkan kunci jawaban dari properti 'indo' atau 'answer'
+  // Handshake fleksibel jika JSON menggunakan 'indo' atau 'answer'
   const correctSource = q.indo || q.answer || "";
   let correctAnswers = Array.isArray(correctSource)
     ? correctSource.map(a => a.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim())
@@ -550,7 +564,7 @@ function submitAnswer() {
     if (attemptCount >= 3) {
       const correctDisplay = Array.isArray(correctSource) ? correctSource.join(" / ") : correctSource;
       wrongList.push({
-        word: q.korea || q.question,
+        word: q.korea || q.question || "Tanpa Kata",
         correct: correctDisplay,
         your: answer
       });
@@ -623,6 +637,7 @@ function backToLogin() {
   document.getElementById("kodeSoal").value = "";
 }
 
+// Enter keypress listener
 document.addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
     if (document.getElementById("custom-dialog").style.display === "flex") {
